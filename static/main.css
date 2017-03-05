@@ -1,0 +1,45 @@
+h1 {
+  text-align: center;
+  background-color: #ccc;
+  padding-left: 15px;
+}
+
+label, input[type="submit"], .error {
+  display: block;
+  font-size: 20px;
+  text-align: center;
+  padding-right: 5px;
+  margin: 0 auto;
+}
+
+textarea {
+  font-size: 1.2em;
+  width: 50vw;
+  height: 50vh;
+  max-width: 100%;
+}
+
+.container {
+  margin: 0 auto;
+  width: 968px;
+}
+
+.invisible {
+  display: none;
+}
+
+.error {
+  padding-left: 5px;
+  color: red;
+  transition:all 0.5s ease-out;
+}
+
+.submit_btn {
+  margin-top: 10px;
+  padding: 5px;
+  width: 100%;
+  cursor: pointer;
+  color: white;
+  background-color: green;
+  border-radius: 3px;
+}

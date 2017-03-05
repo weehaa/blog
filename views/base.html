@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Multiuser Blog by AVes</title>
+    <link rel="stylesheet" href="/static/main.css">
+  </head>
+  <body>
+    <header>
+      <div class="top-menu container">
+        <span class="{{user_in_class}}">
+          {{user}} | <a href="/logout">Logout</a>
+        </span>
+        <span class="{{user_out_class}}">
+          <a href="/login">Login</a> | <a href="/signup">Signup</a>
+        </span>
+      </div>
+      <h1>
+        <a href="/blog">MultiUser Blog</a></h1>
+    </header>
+    <article class="container">
+      {% block content %}
+      {% endblock %}
+    </article>
+  </body>
+</html>

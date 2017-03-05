@@ -1,0 +1,24 @@
+<div class="post">
+  <div class="post-header">
+    <h2 class="post-title">
+      {{p.subject}}
+    </h2>
+  </div>
+
+  <div class="post-content">
+    {{p._render_text | safe}}
+  </div>
+
+  <div class="post-footer">
+    <div class="post-author">
+      <!-- {{p.author}} -->
+
+    </div>
+    <div class="post-date">
+      {{p.created.strftime("%b %d, %Y")}}
+    </div>
+  </div>
+
+
+
+</div>
