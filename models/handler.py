@@ -14,11 +14,9 @@ template_dir = os.path.join(os.path.dirname(__file__), '../views')
 jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir),
                                autoescape=True)
 
-
-class Handler(webapp2.RequestHandler):
+class BaseHandler(webapp2.RequestHandler):
     """
     This class contains base methods for page rendering
-    and cookies processing
     """
     def write(self, *a, **kw):
         """ write page using args and params """
@@ -33,11 +31,16 @@ class Handler(webapp2.RequestHandler):
         """ write rendered template with parameters """
         self.write(self.render_str(template, **kw))
 
+class Handler(BaseHandler):
+    """
+    This class inherits BaseHandler and contains initialize methods for user
+    lodded in|out check and cookies processing
+    """
     def initialize(self, *a, **kw):
         """ this function is called before every request """
         webapp2.RequestHandler.initialize(self, *a, **kw)
         uid = self.read_secure_cookie('user_id')
-        # check if uid exists an store it in self.user
+        #check if uid exists an store it in self.user
         if uid and User.by_id(int(uid)):
             self.user = User.by_id(int(uid))
         else:

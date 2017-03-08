@@ -8,11 +8,12 @@
   <body>
     <header>
       <div class="top-menu container">
-        <span class="{{user_in_class}}">
-          {{user}} | <a href="/logout">Logout</a>
+
+        <span class={% if not user %}"invisible"{% endif %}>
+          {{user}} | <a href="/blog/logout">Logout</a>
         </span>
-        <span class="{{user_out_class}}">
-          <a href="/login">Login</a> | <a href="/signup">Signup</a>
+        <span class={% if user %}"invisible"{% endif %}>
+          <a href="/blog/login">Login</a> | <a href="/blog/signup">Signup</a>
         </span>
       </div>
       <h1>

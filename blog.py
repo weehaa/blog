@@ -11,21 +11,24 @@ class Blog(db.Model):
     content = db.TextProperty(required = True)
     created = db.DateTimeProperty(auto_now_add = True)
     last_modified = db.DateTimeProperty(auto_now = True)
-    # author = db.StringProperty()
+    author = db.StringProperty()
 
     def render(self):
         self._render_text = self.content.replace('\n', '<br>')
-        h = handler.Handler()
-        return h.render_str("post.html", p = self)
+        base_handler = handler.BaseHandler()
+        return base_handler.render_str("post.html", p = self)
 
 
 class BlogFront(handler.Handler):
     def get(self):
         #Google procedural language for GQL query
         #It is the same as
-        #posts = db.GqlQuery("select * from Posts order by created desc")
+        # posts = db.GqlQuery("select * from Blog order by created desc").get()
         posts = Blog.all().order('-created').run(limit=10)
-        self.render("front.html", user_in_class='invisible', posts = posts)
+
+        # self.write('POSTS:' + str(len(posts)))
+        self.render("front.html", user=self.user.username, posts = posts)
+        # self.render("front.html")
 
 
 class PostPage(handler.Handler):
@@ -50,8 +53,10 @@ class NewPostFormPage(handler.Handler):
             content = self.request.get("content")
 
             if subject and content:
-                blog_entity = Blog(parent = blog_key(), subject = subject,
-                                    content = content)
+                blog_entity = Blog(parent = blog_key(),
+                                   subject = subject,
+                                   content = content,
+                                   author = self.user.username)
                 blog_entity.put()
                 blog_id = blog_entity.key().id()
                 self.redirect("/blog/" + str(blog_id))
