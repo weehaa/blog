@@ -46,6 +46,14 @@ class Handler(BaseHandler):
         else:
             self.user = None
 
+    def render(self, template, **kw):
+        """ write rendered template with parameters """
+        # add username as parameter for rendering in templates
+        # if user is logged in
+        if self.user:
+            kw['user'] = self.user.username
+        self.write(self.render_str(template, **kw))
+
 # secure cookie block
     def hash_str(self, string):
         """ define hash string for cookie value """

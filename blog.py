@@ -14,9 +14,14 @@ class Blog(db.Model):
     author = db.StringProperty()
 
     def render(self):
+        """
+        Method for post render
+        """
+        # replace new line symbols with <br tags>
         self._render_text = self.content.replace('\n', '<br>')
         base_handler = handler.BaseHandler()
-        return base_handler.render_str("post.html", p = self)
+        # post_id = self.key().id()
+        return base_handler.render_str("post.html", post=self)
 
 
 class BlogFront(handler.Handler):
@@ -27,7 +32,7 @@ class BlogFront(handler.Handler):
         posts = Blog.all().order('-created').run(limit=10)
 
         # self.write('POSTS:' + str(len(posts)))
-        self.render("front.html", user=self.user.username, posts = posts)
+        self.render("front.html", posts=posts)
         # self.render("front.html")
 
 
@@ -40,12 +45,17 @@ class PostPage(handler.Handler):
             self.error(404)
             return
 
-        self.render("permalink.html", post = post)
+        self.render("permalink.html",
+                    user=self.user.username,
+                    post = post)
 
 
 class NewPostFormPage(handler.Handler):
         def get(self):
-            self.render("newpost.html")
+            if self.user:
+                self.render("newpost.html")
+            else:
+                self.redirect("/blog/login")
 
         def post(self):
 
