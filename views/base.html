@@ -15,6 +15,12 @@
         <span class={% if user %}"invisible"{% endif %}>
           <a href="/blog/login">Login</a> | <a href="/blog/signup">Signup</a>
         </span>
+        <span class={% if not user %}"invisible"{% endif %}>
+         | <a href="/blog/newpost">New Post</a>
+        </span>
+        <span class={% if not user %}"invisible"{% endif %}>
+         | <a href="/blog">My Posts</a>
+        </span>
       </div>
       <h1>
         <a href="/blog">MultiUser Blog</a></h1>

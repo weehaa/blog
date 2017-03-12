@@ -11,17 +11,29 @@ class Blog(db.Model):
     content = db.TextProperty(required = True)
     created = db.DateTimeProperty(auto_now_add = True)
     last_modified = db.DateTimeProperty(auto_now = True)
-    author = db.StringProperty()
+    #author = db.StringProperty()
 
     def render(self):
         """
         Method for post render
         """
-        # replace new line symbols with <br tags>
+
+        # replace new line symbols with <br> tags
         self._render_text = self.content.replace('\n', '<br>')
+
+
+        # get an author of the post = it's parent User
+        author = self.parent()
+
+        #check if user is deleted set author = unknown
+        author_name = 'Unkown blogger'
+        if author:
+            author_name = author.username
+
         base_handler = handler.BaseHandler()
-        # post_id = self.key().id()
-        return base_handler.render_str("post.html", post=self)
+        return base_handler.render_str("post.html",
+                                       post=self,
+                                       author_name=author_name)
 
 
 class BlogFront(handler.Handler):
@@ -38,16 +50,14 @@ class BlogFront(handler.Handler):
 
 class PostPage(handler.Handler):
     def get(self, post_id):
-        key = db.Key.from_path('Blog', int(post_id), parent=blog_key())
+        key = db.Key.from_path('Blog', int(post_id), parent=self.user.key())
         post = db.get(key)
 
         if not post:
             self.error(404)
             return
 
-        self.render("permalink.html",
-                    user=self.user.username,
-                    post = post)
+        self.render("permalink.html", post = post)
 
 
 class NewPostFormPage(handler.Handler):
@@ -63,10 +73,9 @@ class NewPostFormPage(handler.Handler):
             content = self.request.get("content")
 
             if subject and content:
-                blog_entity = Blog(parent = blog_key(),
-                                   subject = subject,
-                                   content = content,
-                                   author = self.user.username)
+                blog_entity = Blog(parent=self.user,
+                                   subject=subject,
+                                   content=content)
                 blog_entity.put()
                 blog_id = blog_entity.key().id()
                 self.redirect("/blog/" + str(blog_id))
