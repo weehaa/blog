@@ -1,8 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
-  {%for p in posts%}
-    {{ p.render() | safe }}
-    <br>{{user}}<br>
-  {%endfor%}
-
+    {% if posts %}
+        {%for p in posts%}
+            {{ p.render() | safe }}
+            <br>{{user}}<br>
+        {%endfor%}
+    {% else %}
+        <div class="">
+            No posts found
+        </div>
+    {% endif %}
 {% endblock %}

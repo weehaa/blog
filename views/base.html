@@ -19,7 +19,7 @@
          | <a href="/blog/newpost">New Post</a>
         </span>
         <span class={% if not user %}"invisible"{% endif %}>
-         | <a href="/blog">My Posts</a>
+         | <a href="/blog?author_name={{user}}">My Posts</a>
         </span>
       </div>
       <h1>

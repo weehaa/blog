@@ -25,7 +25,8 @@ class Blog(db.Model):
         # get an author of the post = it's parent User
         author = self.parent()
 
-        #check if user is deleted set author = unknown
+        # check if user is deleted set author = unknown
+        # TODO get rid of this, problems with a permalink?
         author_name = 'Unkown blogger'
         if author:
             author_name = author.username
@@ -38,14 +39,19 @@ class Blog(db.Model):
 
 class BlogFront(handler.Handler):
     def get(self):
-        #Google procedural language for GQL query
-        #It is the same as
-        # posts = db.GqlQuery("select * from Blog order by created desc").get()
-        posts = Blog.all().order('-created').run(limit=10)
+        # get author from url parameters
+        author_name = self.request.get("author_name")
+        if author_name:
+            author = handler.User.by_name(author_name)
+            if author:
+                posts = Blog.all().ancestor(author)
+            else:
+                posts = None
+        else:
+            posts = Blog.all().order('-created').run(limit=10)
 
-        # self.write('POSTS:' + str(len(posts)))
+
         self.render("front.html", posts=posts)
-        # self.render("front.html")
 
 
 class PostPage(handler.Handler):
