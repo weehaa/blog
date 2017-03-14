@@ -65,7 +65,7 @@ class BlogFront(handler.Handler):
 
 class PostPage(handler.Handler):
     def get(self, author, post_id):
-        author_key = db.Key.from_path('AVes', 'User')
+        author_key = db.Key.from_path('User', 'AVes')
         self.write('Author: ' + str(author_key))
         author_obj = db.get(author_key)
         # self.write('<br>Author_name: ' + str(author_obj.username))
