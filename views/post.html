@@ -1,7 +1,7 @@
 <div class="post">
   <div class="post-header">
     <div class="post-date">
-        {{post.created.strftime("%b %d, %Y")}}
+        {{post.created.strftime("%b %d, %Y %H:%M")}}
     </div>
     <h2 class="post-title">
         <a href="/blog/{{post.key().id()}}">{{post.subject}}</a>

@@ -36,6 +36,10 @@ class Blog(db.Model):
                                        post=self,
                                        author_name=author_name)
 
+class RootRedirect(handler.Handler):
+    def get(self):
+        self.redirect("/blog")
+
 
 class BlogFront(handler.Handler):
     def get(self):
@@ -118,6 +122,7 @@ class MainPage(handler.Handler):
 
 app = handler.webapp2.WSGIApplication([
     ('/blog', BlogFront),
+    ('/', RootRedirect),
     ('/blog/newpost', NewPostFormPage),
     ('/blog/(\d+)', PostPage)
 ], debug=True)
