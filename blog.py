@@ -42,32 +42,42 @@ class RootRedirect(handler.Handler):
 
 
 class BlogFront(handler.Handler):
-    def get(self):
-        # get author from url parameters
-        author_name = self.request.get("author_name")
-        if author_name:
-            author = handler.User.by_name(author_name)
-            if author:
-                posts = Blog.all().ancestor(author)
+    def get(self, author=''):
+
+        if not author:
+            # get author from url parameters
+            author_name = self.request.get("author_name")
+            if author_name:
+                author = handler.User.by_name(author_name)
+                if author:
+                    posts = Blog.all().ancestor(author)
+                else:
+                    posts = None
             else:
-                posts = None
+                posts = Blog.all().order('-created').run(limit=10)
+
+
+            self.render("front.html", posts=posts)
+
         else:
-            posts = Blog.all().order('-created').run(limit=10)
-
-
-        self.render("front.html", posts=posts)
+            key = db.Key.from_path('Blog', str(author))
 
 
 class PostPage(handler.Handler):
-    def get(self, post_id):
-        key = db.Key.from_path('Blog', int(post_id), parent=self.user.key())
-        post = db.get(key)
+    def get(self, author, post_id):
+        author_key = db.Key.from_path('AVes', 'User')
+        self.write('Author: ' + str(author_key))
+        author_obj = db.get(author_key)
+        # self.write('<br>Author_name: ' + str(author_obj.username))
+        post_key = db.Key.from_path('Blog', int(post_id), parent=author_key)
+        self.write('<br>post: ' + str(post_key))
+        post = db.get(post_key)
+        self.write('<br>post: ' + str(post))
+        # if not post:
+        #     self.error(403)
+        #     return
 
-        if not post:
-            self.error(404)
-            return
-
-        self.render("permalink.html", post = post)
+        # self.render("permalink.html", post = post)
 
 
 class NewPostFormPage(handler.Handler):
@@ -88,7 +98,8 @@ class NewPostFormPage(handler.Handler):
                                    content=content)
                 blog_entity.put()
                 blog_id = blog_entity.key().id()
-                self.redirect("/blog/" + str(blog_id))
+                self.redirect("/blog/%s/%s" %
+                              (self.user.username, str(blog_id)))
             else:
                 error = "we need both a subject and some content!"
                 self.render("newpost.html", subject = subject,
@@ -121,8 +132,10 @@ class MainPage(handler.Handler):
             self.render("newpost.html", subject, content, error)
 
 app = handler.webapp2.WSGIApplication([
-    ('/blog', BlogFront),
     ('/', RootRedirect),
+    ('/blog', BlogFront),
     ('/blog/newpost', NewPostFormPage),
-    ('/blog/(\d+)', PostPage)
+    ('/blog/([A-Za-z0-9\-\_]+)', BlogFront),
+
+    ('/blog/([A-Za-z0-9\-\_]+)/(\d+)', PostPage)
 ], debug=True)
