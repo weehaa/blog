@@ -3,7 +3,6 @@
     {% if posts %}
         {%for p in posts%}
             {{ p.render() | safe }}
-            <br>{{user}}<br>
         {%endfor%}
     {% else %}
         <div class="">

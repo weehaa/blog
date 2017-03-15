@@ -16,7 +16,12 @@
 
   <div class="post-footer">
     <div class="post-author">
-      Posted by {{author_name}}
+      Posted by
+        <a href="/blog?author_name={{author_name}}"
+           title="View all {{author_name}} posts">
+            {{author_name}}
+        </a>
+
     </div>
   </div>
 </div>
