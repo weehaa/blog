@@ -6,9 +6,9 @@ handlers:
 - url: /static
   static_dir: static
 - url: /blog/(signup|login|logout|welcome)
-  script: control_account.app
+  script: account_control.app
 - url: /.*
-  script: blog.app
+  script: blog_control.app
 
 libraries:
 - name: jinja2
