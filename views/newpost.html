@@ -14,7 +14,13 @@
         <div class="error">
           {{error}}
         </div>
-        <input type="submit">
+        <input type="hidden" name="referer" value="{{referer}}">
+        <input type="submit" value="Submit">
+        <a href={% if referer %}"{{referer}}"{% else %}"/blog"{% endif %}
+           title="Cancel edit">
+           Cancel
+        </a>
 
       </form>
+
     {% endblock %}
