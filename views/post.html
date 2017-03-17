@@ -4,7 +4,7 @@
         {{post.created.strftime("%b %d, %Y %H:%M")}}
     </div>
     <h2 class="post-title">
-        <a href="/blog/{{author_name}}/{{post.key().id()}}">
+        <a href="/blog/{{post.parent().username}}/{{post.key().id()}}">
             {{post.subject}}
         </a>
     </h2>
@@ -17,12 +17,10 @@
   <div class="post-footer">
     <div class="post-author">
       Posted by
-        <a href="/blog?author_name={{author_name}}"
-           title="View all {{author_name}} posts">
-            {{author_name}}
+        <a href="/blog?author_name={{post.parent().username}}"
+           title="View all {{post.parent().username}} posts">
+            {{post.parent().username}}
         </a>
-        <br>
-        <a href="/blog/newpost?post_id={{post.key().id()}}">Edit</a>
     </div>
   </div>
 </div>

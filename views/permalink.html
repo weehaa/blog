@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-  {{post.render() | safe}}
+    {{post.render() | safe}}
+    <!-- show "edit" button if user == author of the post -->
+    {% if user == post.parent().username %}
+        <a href="/blog/newpost?post_id={{post.key().id()}}">Edit</a>
+    {% endif %}
 {% endblock %}
