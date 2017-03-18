@@ -58,10 +58,26 @@ class PostPage(handler.Handler):
 
         self.render("permalink.html", post=post)
 
-    def post(self, author, post_id):
+    def post(self, author_name, post_id):
         action = self.request.get('action')
-        if action == 'delete':
-            self.write('OK')
+        action_delete = self.request.get('action_delete')
+        post = blog.get_post(author_name, post_id)
+        if not post:
+            self.error(404)
+            return
+
+        if action == 'Edit':
+            self.redirect("/blog/newpost?post_id=" + post_id)
+
+        elif action == 'Delete':
+            self.render("permalink.html", post=post, action='delete')
+
+        elif action_delete and self.user.username == author_name:
+            post.delete()
+            self.render("permalink.html", post_deleted=True)
+
+        else:
+            self.render("permalink.html", post=post)
 
 class NewPostFormPage(handler.Handler):
     def get(self):

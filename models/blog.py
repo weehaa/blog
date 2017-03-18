@@ -8,7 +8,6 @@ class Blog(db.Model):
     content = db.TextProperty(required = True)
     created = db.DateTimeProperty(auto_now_add = True)
     last_modified = db.DateTimeProperty(auto_now = True)
-    #author = db.StringProperty()
 
     def render(self):
         """
@@ -48,7 +47,7 @@ class Blog(db.Model):
 
 
 def get_post(author_name, post_id):
-    """Get post by post_id and parent key"""
+    """Get post by post_id and username"""
     author_key = User.by_name(author_name).key()
     post_key = db.Key.from_path('Blog', int(post_id), parent=author_key)
     return db.get(post_key)

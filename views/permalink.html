@@ -1,12 +1,22 @@
 {% extends "base.html" %}
 
 {% block content %}
-    {{post.render() | safe}}
-    <!-- show "edit" button if user == author of the post -->
-    {% if user == post.parent().username %}
-        <a href="/blog/newpost?post_id={{post.key().id()}}">Edit</a>
-        <form method="post">
-            <input type="submit" name="action" value="delete">
-        </form>
+    {% if post_deleted %}
+        <span class="error">Post deleted</span>
+    {% else %}
+        {{post.render() | safe}}
+        <!-- show "edit" button if user == author of the post -->
+        {% if user == post.parent().username %}
+            <form method="post">
+                <input type="submit" name="action" value="Edit">
+                <input type="submit" name="action" value="Delete">
+                {% if action == 'delete' %}
+                    <span class="error">Confirm post deletion</span>
+                    <input type="submit" name="action_delete" value="Confirm">
+                    <input type="submit" name="action_cancel" value="Cancel">
+                {% endif %}
+            </form>
+
+        {% endif %}
     {% endif %}
 {% endblock %}
