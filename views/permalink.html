@@ -5,5 +5,8 @@
     <!-- show "edit" button if user == author of the post -->
     {% if user == post.parent().username %}
         <a href="/blog/newpost?post_id={{post.key().id()}}">Edit</a>
+        <form method="post">
+            <input type="submit" name="action" value="delete">
+        </form>
     {% endif %}
 {% endblock %}
