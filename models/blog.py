@@ -28,9 +28,9 @@ class Blog(db.Model):
 
     @classmethod
     def get_posts(cls, author_name=None, limit=None):
-        """Return posts, added by author_name ordered by created DateTime
-        if author_name is not specified, return posts of all authors
-        if author_name is specified, but does not exist, return None
+        """Return posts, added by author_name ordered by created DateTime.
+        If author_name is not specified, return posts of all authors.
+        If author_name is specified, but does not exist, return None
         A number of return posts is limited by limit
         Arguments:
         author_name -- a blogger username, a string or None (default None)
@@ -47,7 +47,8 @@ class Blog(db.Model):
         return query.run(limit=limit)
 
 
-def get_post(post_id, parent):
-   """Get post by post_id and parent key"""
-   post_key = db.Key.from_path('Blog', int(post_id), parent=parent)
-   return db.get(post_key)
+def get_post(author_name, post_id):
+    """Get post by post_id and parent key"""
+    author_key = User.by_name(author_name).key()
+    post_key = db.Key.from_path('Blog', int(post_id), parent=author_key)
+    return db.get(post_key)

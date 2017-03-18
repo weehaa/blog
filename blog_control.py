@@ -1,6 +1,5 @@
 import handler
 import blog
-from user import User
 
 
 class RootRedirect(handler.Handler):
@@ -19,8 +18,11 @@ class BlogFront(handler.Handler):
     def get(self):
         """
         Method for a get response.
-        Takes author_name from url and returns all author's posts.
-        If there is no author_name in url, return all posts.
+        Takes author_name parameter from request and returns
+        author's posts.
+        If there is no author_name in request, return posts of all authors.
+        Number of posts is limited by limit parameter (default 10, max 99).
+        TODO: add pagination
         """
         # get author from url parameters
         author_name = self.request.get("author_name")
@@ -30,12 +32,12 @@ class BlogFront(handler.Handler):
 
         limit = self.request.get("limit")
         # validate limit
-        if limit.isdigit():
+        if limit.isdigit() and len(limit) < 3:
             limit = int(limit)
         else:
             limit = 10
         posts = blog.Blog.get_posts(author_name, limit)
-        
+
         self.render("front.html",
                     author_name=author_name,
                     limit=limit,
@@ -43,9 +45,13 @@ class BlogFront(handler.Handler):
 
 
 class PostPage(handler.Handler):
-    def get(self, author, post_id):
-        author_key = User.by_name(author).key()
-        post = blog.get_post(post_id, author_key)
+    """
+    Class for requested post page. If auhtor of the post is logged in,
+    he can edit or delete post on the page.
+    """
+    def get(self, author_name, post_id):
+
+        post = blog.get_post(author_name, post_id)
         if not post:
             self.error(404)
             return
@@ -65,7 +71,7 @@ class NewPostFormPage(handler.Handler):
          # show newpost page if user has logged in
         if self.user:
             if post_id:
-                post = blog.get_post(post_id, self.user.key())
+                post = blog.get_post(self.user.username, post_id)
                 if post:
                     subject = post.subject
                     content = post.content
@@ -83,7 +89,7 @@ class NewPostFormPage(handler.Handler):
 
         if subject and content:
             if post_id:
-                post = blog.get_post(post_id, self.user.key())
+                post = blog.get_post(self.user.username, post_id)
             # if not the author tries to edit, then redirect to empty form
                 if post:
                     post.content = content
