@@ -24,11 +24,22 @@ class BlogFront(handler.Handler):
         """
         # get author from url parameters
         author_name = self.request.get("author_name")
-        # TODO: add filter feature and take limit from get request
-        limit = 10
-        posts = blog.Blog.get_posts(author_name, limit)
+        # validate author_name
+        if not handler.User.valid_username(author_name):
+            author_name = ''
 
-        self.render("front.html", author_name=author_name, posts=posts)
+        limit = self.request.get("limit")
+        # validate limit
+        if limit.isdigit():
+            limit = int(limit)
+        else:
+            limit = 10
+        posts = blog.Blog.get_posts(author_name, limit)
+        
+        self.render("front.html",
+                    author_name=author_name,
+                    limit=limit,
+                    posts=posts)
 
 
 class PostPage(handler.Handler):
