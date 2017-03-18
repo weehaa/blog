@@ -1,5 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
+    <h2 class="front_subtitle">
+        Recently added posts
+        {% if author_name %}
+             by {{author_name}}
+        {% endif %}
+    </h2>
+
     {% if posts %}
         {%for p in posts%}
             {{ p.render() | safe }}
