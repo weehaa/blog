@@ -1,0 +1,53 @@
+import handler
+from google.appengine.ext import db
+from user import User
+
+class Blog(db.Model):
+
+    subject = db.StringProperty(required = True)
+    content = db.TextProperty(required = True)
+    created = db.DateTimeProperty(auto_now_add = True)
+    last_modified = db.DateTimeProperty(auto_now = True)
+    #author = db.StringProperty()
+
+    def render(self):
+        """
+        Method for post render
+        actualy, it is a controller method
+        """
+
+        # replace new line symbols with <br> tags
+        self._render_text = self.content.replace('\n', '<br>')
+
+        # get an author of the post = it's parent User
+        author = self.parent()
+
+        base_handler = handler.BaseHandler()
+        return base_handler.render_str("post.html",
+                                       post=self)
+
+    @classmethod
+    def get_posts(cls, author_name=None, limit=None):
+        """Return posts, added by author_name ordered by created DateTime
+        if author_name is not specified, return posts of all authors
+        if author_name is specified, but does not exist, return None
+        A number of return posts is limited by limit
+        Arguments:
+        author_name -- a blogger username, a string or None (default None)
+        limit -- number of posts to return, an integer or None (default None)
+        """
+        query = cls.all().order('-created')
+        if author_name:
+            user = User.by_name(author_name)
+            if user:
+                query.ancestor(user)
+            # if user not found, return None
+            else:
+                return
+        return query.run(limit=limit)
+
+
+def get_post(post_id, parent):
+   """Get post by post_id and parent key"""
+   post_key = db.Key.from_path('Blog', int(post_id), parent=parent)
+   return db.get(post_key)
