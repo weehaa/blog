@@ -30,12 +30,10 @@
     {% if action == 'Add comment' %}
         <label>
           <div class="">Comment text</div>
-          <textarea class"comment-textarea" name="content">
-              {{content}}
-          </textarea>
+          <textarea class="textarea" name="content">{{content}}</textarea>
         </label>
 
-        <div class="error">
+        <div id="error">
           {{error}}
         </div>
         <input form="actions" type="submit"

@@ -1,5 +1,6 @@
 import handler
 import blog
+import comment
 
 
 class RootRedirect(handler.Handler):
@@ -59,35 +60,50 @@ class PostPage(handler.Handler):
         self.render("permalink.html", post=post)
 
     def post(self, author_name, post_id):
-        action = self.request.get('action')
+        """Method handles post request for a single post page.
+        Returns response, based on user actions from permalink.html
+        'actions' form, such as delete post with confirmation, edit post,
+        add comment, like or dislike a post.
+        Adds comment to a database after comment content validation.
+        Parameters:
+        author_name -- post author name, taken from url
+        post_id -- post id, taken from url
+        """
+        post_params = {}
+
+        # action_delete is a confirmed delition button
         action_delete = self.request.get('action_delete')
+
+        # get the post object
         post = blog.get_post(author_name, post_id)
         if not post:
             self.error(404)
             return
-        post_params = {}
-        post_params['post'] = post
 
-        if action:
+        # if post deletion is confirmed,
+        # and logged in user is an author of the post, delete the post
+        if action_delete and self.user.username == author_name:
+            post.delete()
+            post_params['post_deleted'] = True
+        else:
+            post_params['post'] = post
+            action = self.request.get('action')
+
             if action == 'Edit':
                 self.redirect("/blog/newpost?post_id=" + post_id)
             if action == 'Submit comment':
                 content = self.request.get('content')
                 if content:
-                    comment = comment.Comment(parent=self.post,
-                                              author=self.user.username,
-                                              subject=subject,
-                                              content=content)
+                    post_comment = comment.Comment(parent=post,
+                                                   author=self.user.username,
+                                                   content=content)
+                    post_comment.put()
+
                 else:
-                    post_params['action'] = 'Add comment'
+                    action = 'Add comment'
                     post_params['error'] = 'Please, add some content.'
 
-            else:
-                post_params['action'] = action
-
-        elif action_delete and self.user.username == author_name:
-            post.delete()
-            post_params['post_deleted'] = True
+            post_params['action'] = action
 
         self.render("permalink.html", **post_params)
 
