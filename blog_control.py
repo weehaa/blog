@@ -65,19 +65,31 @@ class PostPage(handler.Handler):
         if not post:
             self.error(404)
             return
+        post_params = {}
+        post_params['post'] = post
 
         if action:
             if action == 'Edit':
                 self.redirect("/blog/newpost?post_id=" + post_id)
+            if action == 'Submit comment':
+                content = self.request.get('content')
+                if content:
+                    comment = comment.Comment(parent=self.post,
+                                              author=self.user.username,
+                                              subject=subject,
+                                              content=content)
+                else:
+                    post_params['action'] = 'Add comment'
+                    post_params['error'] = 'Please, add some content.'
+
             else:
-                self.render("permalink.html", post=post, action=action)
+                post_params['action'] = action
 
         elif action_delete and self.user.username == author_name:
             post.delete()
-            self.render("permalink.html", post_deleted=True)
+            post_params['post_deleted'] = True
 
-        else:
-            self.render("permalink.html", post=post)
+        self.render("permalink.html", **post_params)
 
 
 class NewPostFormPage(handler.Handler):
