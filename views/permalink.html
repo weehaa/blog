@@ -1,22 +1,54 @@
 {% extends "base.html" %}
 
 {% block content %}
-    {% if post_deleted %}
-        <span class="error">Post deleted</span>
-    {% else %}
-        {{post.render() | safe}}
-        <!-- show "edit" button if user == author of the post -->
-        {% if user == post.parent().username %}
-            <form method="post">
-                <input type="submit" name="action" value="Edit">
-                <input type="submit" name="action" value="Delete">
-                {% if action == 'delete' %}
-                    <span class="error">Confirm post deletion</span>
-                    <input type="submit" name="action_delete" value="Confirm">
-                    <input type="submit" name="action_cancel" value="Cancel">
-                {% endif %}
-            </form>
+
+{% if post_deleted %}
+    <span class="error">Post deleted</span>
+{% else %}
+    {{post.render() | safe}}
+    <!-- show action form button if user == author of the post -->
+    {% if user == post.parent().username %}
+        <form id="actions" method="post">
+            <input type="submit" name="action" value="Edit">
+            <input type="submit" name="action" value="Delete">
 
         {% endif %}
+            {% if action == 'Delete' %}
+                <span class="error">Confirm post deletion</span>
+                <input type="submit" name="action_delete" value="Confirm">
+                <input type="submit" name="action_cancel" value="Cancel">
+
+        </form>
     {% endif %}
+
+    <!-- comments block -->
+    <h3 class="comments-title">
+        {{comment_count}} comments
+    </h3>
+    <input form="actions" type="submit" name="action" value="Add comment">
+    <!-- add comment form -->
+    {% if action == 'Add comment' %}
+        <label>
+          <div class="">Comment text</div>
+          <textarea class"comment-textarea" name="content">
+              {{content}}
+          </textarea>
+        </label>
+
+        <div class="error">
+          {{error}}
+        </div>
+        <input form="action_form" type="submit"
+               name="action" value="Submit comment">
+        <input type="submit" name="action_cancel" value="Cancel">
+    {% endif %}
+
+    {% if comments %}
+        {%for c in comments%}
+            {{ c.render() | safe }}
+        {% endfor %}
+    {% endif %}
+
+{% endif %}
+
 {% endblock %}

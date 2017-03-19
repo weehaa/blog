@@ -1,21 +1,24 @@
 {% extends "base.html" %}
 {% block content %}
     <form class=""  method="get">
+        <fieldset>
+        <legend>Filter</legend>
+            <label>
+                <span>Number of posts</span>
+                <input type="text" name="limit"
+                        value="{% if limit %}{{limit}}{% endif %}">
+            </label>
+            <label>
+                <span>Author</span>
+                <input type="text" name="author_name" value="{{author_name}}">
+            </label>
+            <input type="submit" name="" value="Apply">
+        </fieldset>
 
-        <label>
-            <span>Number of posts</span>
-            <input type="text" name="limit"
-                    value="{% if limit %}{{limit}}{% endif %}">
-        </label>
-        <label>
-            <span>Author</span>
-            <input type="text" name="author_name" value="{{author_name}}">
-        </label>
-        <input type="submit" name="" value="Apply">
 
 
     </form>
-    <h2 class="front_subtitle">
+    <h2 class="front-subtitle">
         {% if limit %}{{limit}}{% endif %} Recently added posts
         {% if author_name %}
              by {{author_name}}
