@@ -9,7 +9,7 @@ class Comment(db.Model):
     created = db.DateTimeProperty(auto_now_add = True)
     last_modified = db.DateTimeProperty(auto_now = True)
 
-    def render(self):
+    def render(self, edit=False):
         """
         Method for comment render
         """
@@ -19,7 +19,8 @@ class Comment(db.Model):
 
         base_handler = handler.BaseHandler()
         return base_handler.render_str("comment.html",
-                                       comment=self)
+                                       comment=self,
+                                       edit=edit)
 
 
 

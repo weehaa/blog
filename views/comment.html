@@ -9,8 +9,16 @@
     </div>
   </div>
 
+  {% if edit %}
+    <textarea id="id_0" form="actions"
+                class="textarea" name="content">{{comment._render_text | safe}}
+    </textarea>
+    <div class="error">
+      {{error}}
+    </div>
+  {% else %}
   <div class="comment-content">
     {{comment._render_text | safe}}
   </div>
-
+  {% endif %}
 </div>

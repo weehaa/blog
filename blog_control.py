@@ -51,7 +51,7 @@ class PostPage(handler.Handler):
     he can edit or delete post on the page.
     """
     def get(self, author_name, post_id):
-        edit_cid = self.request.get('edit_cid')
+        edit_id = self.request.get('edit_id')
         act = self.request.get('act')
         error = self.request.get('error')
         post = blog.get_post(author_name, post_id)
@@ -66,7 +66,7 @@ class PostPage(handler.Handler):
                                       comments=comments,
                                       act=act,
                                       error=error,
-                                      edit_cid=edit_cid)
+                                      edit_id=edit_id)
 
     def post(self, author_name, post_id):
         """Method handles post request for a single post page.
@@ -110,7 +110,18 @@ class PostPage(handler.Handler):
                 # redirect user to postform page with post id
                 self.redirect("/blog/newpost?post_id=" + post_id)
 
+            if action == 'Edit comment':
+                comment_id = self.request.get('comment_id')
+                # redirect user to this page with anchor to empty comment form
+                url_arg = 'edit_id=%s#id_%s' % (comment_id, comment_id)
+                self.redirect("/blog/%s/%s?%s" % \
+                                (author_name, post_id, url_arg))
 
+            if action == 'Add comment':
+                # redirect user to this page with anchor to empty comment form
+                url_arg = 'act=Add comment#id_0'
+                self.redirect("/blog/%s/%s?%s" % \
+                                (author_name, post_id, url_arg))
 
             # Submit comment handler
             if action == 'Submit comment':
@@ -124,18 +135,14 @@ class PostPage(handler.Handler):
 
                 else:
                     if comment_id:
-                        url_arg = 'edit_cid=%s#id_%s' % (comment_id, comment_id)
+                        url_arg = 'comment_id=%s#id_%s' % (comment_id,
+                                                            comment_id)
                     else:
                         url_arg = 'act=Add comment&error=True#id_0'
 
                     self.redirect("/blog/%s/%s?%s" % \
                                     (author_name, post_id, url_arg))
 
-            if action == 'Add comment':
-                # redirect user to this page with anchor to empty comment form
-                url_arg = 'act=Add comment#id_0'
-                self.redirect("/blog/%s/%s?%s" % \
-                                (author_name, post_id, url_arg))
 
             if action == 'Delete comment':
                 comment_id = self.request.get('comment_id')

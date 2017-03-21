@@ -41,9 +41,6 @@
                 </div>
             </label>
 
-            <!-- comment_id from post response to edit the comment-->
-            <input form="actions" type="hidden"
-                   name="comment_id" value="">
             <input form="actions" type="submit"
                    name="action" value="Submit comment">
             <input form="actions" type="submit"
@@ -58,14 +55,16 @@
     {% if comments %}
 
         {%for comment in comments%}
-            {{ comment.render() | safe }}
+            {{ comment.render(comment.key().id()|string == edit_id) | safe }}
             {% if comment.author == user %}
-            <input form="actions" type="hidden"
-                   name="comment_id" value="{{comment.key()}}">
-            <input form="actions" type="submit"
-                   name="action" value="Edit comment">
-            <input form="actions" type="submit"
-                   name="action" value="Delete comment">
+                <form id="form_{{comment.key().id()}}" method="post">
+                    <input type="hidden"
+                           name="comment_id" value="{{comment.key().id()}}">
+                    <input type="submit"
+                           name="action" value="Edit comment">
+                    <input type="submit"
+                           name="action" value="Delete comment">
+               </form>
             {% endif %}
         {% endfor %}
     {% endif %}
