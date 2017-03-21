@@ -20,3 +20,16 @@ class Comment(db.Model):
         base_handler = handler.BaseHandler()
         return base_handler.render_str("comment.html",
                                        comment=self)
+
+
+
+    @classmethod
+    def by_post(cls, post, limit=None):
+        """Returns all comments for a post"""
+        query = cls.all().order('-created').ancestor(post)
+        return query.run(limit=limit)
+
+    @classmethod
+    def by_id(cls, comment_id, post_key):
+        """get Comment by id"""
+        return cls.get_by_id(comment_id, parent=post_key)

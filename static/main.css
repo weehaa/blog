@@ -4,20 +4,20 @@ h1 {
   padding-left: 15px;
 }
 
-label, input[type="submit"], .error {
+/*label, input[type="submit"], .error {
   display: block;
   font-size: 20px;
   text-align: center;
   padding-right: 5px;
   margin: 0 auto;
-}
+}*/
 
-textarea {
+/*textarea {
   font-size: 1.2em;
   width: 50vw;
   height: 50vh;
   max-width: 100%;
-}
+}*/
 
 .container {
   margin: 0 auto;

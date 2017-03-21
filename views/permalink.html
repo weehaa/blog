@@ -7,8 +7,9 @@
 {% else %}
     {{post.render() | safe}}
     <!-- show action form button if user == author of the post -->
+    <form id="actions" method="post">
     {% if user == post.parent().username %}
-        <form id="actions" method="post">
+
             <input type="submit" name="action" value="Edit">
             <input type="submit" name="action" value="Delete">
 
@@ -18,8 +19,9 @@
                 <input type="submit" name="action_delete" value="Confirm">
                 <input type="submit" name="action_cancel" value="Cancel">
 
-        </form>
+
     {% endif %}
+    </form>
 
     <!-- comments block -->
     <h3 class="comments-title">
@@ -27,23 +29,44 @@
     </h3>
     <input form="actions" type="submit" name="action" value="Add comment">
     <!-- add comment form -->
-    {% if action == 'Add comment' %}
-        <label>
-          <div class="">Comment text</div>
-          <textarea class="textarea" name="content">{{content}}</textarea>
-        </label>
+    {% if act == 'Add comment' %}
+        {% if user %}
+            <label>
+              <div  class="">Comment text</div>
 
-        <div id="error">
-          {{error}}
-        </div>
-        <input form="actions" type="submit"
-               name="action" value="Submit comment">
-        <input type="submit" name="action_cancel" value="Cancel">
+              <textarea id="id_0" form="actions"
+                        class="textarea" name="content">{{content}}</textarea>
+                <div class="error">
+                  {{error}}
+                </div>
+            </label>
+
+            <!-- comment_id from post response to edit the comment-->
+            <input form="actions" type="hidden"
+                   name="comment_id" value="">
+            <input form="actions" type="submit"
+                   name="action" value="Submit comment">
+            <input form="actions" type="submit"
+                   name="action_cancel" value="Cancel">
+       {% else %}
+       <div class="error">
+         Please, <a href="/blog/login">login</a> to write a comment
+       </div>
+       {% endif %}
     {% endif %}
 
     {% if comments %}
-        {%for c in comments%}
-            {{ c.render() | safe }}
+
+        {%for comment in comments%}
+            {{ comment.render() | safe }}
+            {% if comment.author == user %}
+            <input form="actions" type="hidden"
+                   name="comment_id" value="{{comment.key()}}">
+            <input form="actions" type="submit"
+                   name="action" value="Edit comment">
+            <input form="actions" type="submit"
+                   name="action" value="Delete comment">
+            {% endif %}
         {% endfor %}
     {% endif %}
 

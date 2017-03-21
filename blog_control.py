@@ -51,13 +51,22 @@ class PostPage(handler.Handler):
     he can edit or delete post on the page.
     """
     def get(self, author_name, post_id):
-
+        edit_cid = self.request.get('edit_cid')
+        act = self.request.get('act')
+        error = self.request.get('error')
         post = blog.get_post(author_name, post_id)
         if not post:
             self.error(404)
             return
 
-        self.render("permalink.html", post=post)
+        comments = comment.Comment.by_post(post)
+        if error:
+            error = 'Please, add a comment text'
+        self.render("permalink.html", post=post,
+                                      comments=comments,
+                                      act=act,
+                                      error=error,
+                                      edit_cid=edit_cid)
 
     def post(self, author_name, post_id):
         """Method handles post request for a single post page.
@@ -71,8 +80,14 @@ class PostPage(handler.Handler):
         """
         post_params = {}
 
-        # action_delete is a confirmed delition button
+        # action_delete is a confirmed deletion of the post
         action_delete = self.request.get('action_delete')
+        action = self.request.get('action')
+
+        # if action is perfomed by not logged-in user, redirect him
+        # to login page.
+        if (action or action_delete) and not self.user:
+            self.redirect("/blog/login")
 
         # get the post object
         post = blog.get_post(author_name, post_id)
@@ -87,12 +102,20 @@ class PostPage(handler.Handler):
             post_params['post_deleted'] = True
         else:
             post_params['post'] = post
-            action = self.request.get('action')
 
+            # user actions handlers block
+
+            # Edit post handler
             if action == 'Edit':
+                # redirect user to postform page with post id
                 self.redirect("/blog/newpost?post_id=" + post_id)
+
+
+
+            # Submit comment handler
             if action == 'Submit comment':
                 content = self.request.get('content')
+                comment_id = self.request.get('comment_id')
                 if content:
                     post_comment = comment.Comment(parent=post,
                                                    author=self.user.username,
@@ -100,10 +123,32 @@ class PostPage(handler.Handler):
                     post_comment.put()
 
                 else:
-                    action = 'Add comment'
-                    post_params['error'] = 'Please, add some content.'
+                    if comment_id:
+                        url_arg = 'edit_cid=%s#id_%s' % (comment_id, comment_id)
+                    else:
+                        url_arg = 'act=Add comment&error=True#id_0'
+
+                    self.redirect("/blog/%s/%s?%s" % \
+                                    (author_name, post_id, url_arg))
+
+            if action == 'Add comment':
+                # redirect user to this page with anchor to empty comment form
+                url_arg = 'act=Add comment#id_0'
+                self.redirect("/blog/%s/%s?%s" % \
+                                (author_name, post_id, url_arg))
+
+            if action == 'Delete comment':
+                comment_id = self.request.get('comment_id')
+                if comment_id.isdigit():
+                    comment_id = int(comment_id)
+                    post_comment = comment.Comment.by_id(comment_id,
+                                                         post.key())
+                if post_comment and post_comment.author == self.user.username:
+                    post_comment.delete()
 
             post_params['action'] = action
+
+        post_params['comments'] = comment.Comment.by_post(post)
 
         self.render("permalink.html", **post_params)
 
