@@ -9,13 +9,19 @@
     </div>
   </div>
 
-  {% if edit %}
-    <textarea id="id_0" form="actions"
+  {% if isedit %}
+    <textarea form="actions"
                 class="textarea" name="content">{{comment._render_text | safe}}
     </textarea>
     <div class="error">
       {{error}}
     </div>
+    <input form="actions" type="hidden"
+           name="comment_id" value="{{comment.key().id()}}">
+    <input form="actions" type="submit"
+          name="action" value="Submit comment">
+    <input form="actions" type="submit"
+          name="action_cancel" value="Cancel">
   {% else %}
   <div class="comment-content">
     {{comment._render_text | safe}}

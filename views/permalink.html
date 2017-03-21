@@ -32,9 +32,8 @@
     {% if act == 'Add comment' %}
         {% if user %}
             <label>
-              <div  class="">Comment text</div>
-
-              <textarea id="id_0" form="actions"
+              <div id="id_0" class="">Comment text</div>
+              <textarea  form="actions"
                         class="textarea" name="content">{{content}}</textarea>
                 <div class="error">
                   {{error}}
@@ -54,16 +53,19 @@
 
     {% if comments %}
 
-        {%for comment in comments%}
+        {% for comment in comments %}
+            
             {{ comment.render(comment.key().id()|string == edit_id) | safe }}
             {% if comment.author == user %}
                 <form id="form_{{comment.key().id()}}" method="post">
                     <input type="hidden"
                            name="comment_id" value="{{comment.key().id()}}">
-                    <input type="submit"
-                           name="action" value="Edit comment">
-                    <input type="submit"
-                           name="action" value="Delete comment">
+                  {% if not edit_id %}
+                        <input type="submit"
+                               name="action" value="Edit comment">
+                        <input type="submit"
+                               name="action" value="Delete comment">
+                  {% endif %}
                </form>
             {% endif %}
         {% endfor %}

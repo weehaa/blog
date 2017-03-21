@@ -9,20 +9,31 @@ class Comment(db.Model):
     created = db.DateTimeProperty(auto_now_add = True)
     last_modified = db.DateTimeProperty(auto_now = True)
 
-    def render(self, edit=False):
+    def render(self, isedit=False):
         """
         Method for comment render
+        Arguments:
+        isedit -- flag for the comment edit status
         """
-
         # replace new line symbols with <br> tags
         self._render_text = self.content.replace('\n', '<br>')
-
         base_handler = handler.BaseHandler()
         return base_handler.render_str("comment.html",
                                        comment=self,
-                                       edit=edit)
+                                       isedit=isedit)
 
 
+    @classmethod
+    def db_put(cls, parent_post, author, content, comment_id=None):
+        """Method to insert new comment or update an existing one"""
+        if comment_id.isdigit():
+            comment = cls.by_id(int(comment_id), parent_post.key())
+            comment.content = content
+        else:
+            comment = cls(parent=parent_post,
+                                    author=author,
+                                    content=content)
+        comment.put()
 
     @classmethod
     def by_post(cls, post, limit=None):

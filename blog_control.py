@@ -51,17 +51,27 @@ class PostPage(handler.Handler):
     he can edit or delete post on the page.
     """
     def get(self, author_name, post_id):
+        """get requestmethod handler. Renders single post page base on
+        parameters from url + anchor to scroll to the focused action item of
+        the page
+        """
+        # comment id that is edited
         edit_id = self.request.get('edit_id')
+        # user action
         act = self.request.get('act')
+        # error while comment editing
         error = self.request.get('error')
+        # retrieve post object
         post = blog.get_post(author_name, post_id)
         if not post:
             self.error(404)
             return
-
+        # retrieve all comments for the post
         comments = comment.Comment.by_post(post)
+        # define error text
         if error:
             error = 'Please, add a comment text'
+
         self.render("permalink.html", post=post,
                                       comments=comments,
                                       act=act,
@@ -109,10 +119,10 @@ class PostPage(handler.Handler):
             if action == 'Edit':
                 # redirect user to postform page with post id
                 self.redirect("/blog/newpost?post_id=" + post_id)
-
+            # Edit comment handler
             if action == 'Edit comment':
                 comment_id = self.request.get('comment_id')
-                # redirect user to this page with anchor to empty comment form
+                # redirect user to this page with an anchor to edited comment
                 url_arg = 'edit_id=%s#id_%s' % (comment_id, comment_id)
                 self.redirect("/blog/%s/%s?%s" % \
                                 (author_name, post_id, url_arg))
@@ -123,16 +133,14 @@ class PostPage(handler.Handler):
                 self.redirect("/blog/%s/%s?%s" % \
                                 (author_name, post_id, url_arg))
 
-            # Submit comment handler
+            # handler for Submit new or edited comment
             if action == 'Submit comment':
                 content = self.request.get('content')
                 comment_id = self.request.get('comment_id')
                 if content:
-                    post_comment = comment.Comment(parent=post,
-                                                   author=self.user.username,
-                                                   content=content)
-                    post_comment.put()
-
+                    comment.Comment.db_put(post, self.user.username,
+                                            content=content,
+                                            comment_id=comment_id)
                 else:
                     if comment_id:
                         url_arg = 'comment_id=%s#id_%s' % (comment_id,
@@ -202,8 +210,7 @@ class NewPostFormPage(handler.Handler):
             if not post_id:
                 post_id = post.key().id()
             self.redirect("/blog/%s/%s" %
-                          (self.user.username, str(post_id))
-                          )
+                          (self.user.username, str(post_id)))
         else:
             error = "we need both a subject and some content!"
             self.render_post(referer, subject, content, error)
