@@ -143,7 +143,7 @@ class PostPage(handler.Handler):
                                             comment_id=comment_id)
                 else:
                     if comment_id:
-                        url_arg = 'comment_id=%s&error=True#id_%s' % \
+                        url_arg = 'edit_id=%s&error=True#id_%s' % \
                                     (comment_id, comment_id)
                     else:
                         url_arg = 'act=Add comment&error=True#id_0'

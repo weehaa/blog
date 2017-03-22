@@ -1,18 +1,22 @@
 <div id="id_{{comment.key().id()}}" class="comment">
   <div class="comment-header">
-
     <div class="comment-author">
         {{comment.author}}
     </div>
     <div class="comment-date">
         {{comment.created.strftime("%b %d, %Y %H:%M")}}
     </div>
+    <div class="">
+        Last modified:
+    </div>
+    <div class="comment-date">
+        {{comment.last_modified.strftime("%b %d, %Y %H:%M")}}
+    </div>
   </div>
 
   {% if isedit %}
-    <textarea form="actions"
-                class="textarea" name="content">{{comment.content | safe}}
-    </textarea>
+    <textarea form="actions" class="textarea"
+        name="content">{{comment.content | safe}}</textarea>
     <div class="error">
       {{error}}
     </div>
