@@ -33,7 +33,19 @@ class Comment(db.Model):
             comment = cls(parent=parent_post,
                                     author=author,
                                     content=content)
+            # update  comment counter for parent post
+            parent_post.comment_cnt += 1
+            parent_post.put()
         comment.put()
+
+    @classmethod
+    def db_delete(cls, parent_post, comment_id, username):
+        if comment_id.isdigit():
+            comment = cls.by_id(int(comment_id), parent_post.key())
+            if comment and comment.author == username:
+                parent_post.comment_cnt -= 1
+                parent_post.put()
+                comment.delete()
 
     @classmethod
     def by_post(cls, post, limit=None):

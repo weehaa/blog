@@ -154,12 +154,7 @@ class PostPage(handler.Handler):
 
             if action == 'Delete comment':
                 comment_id = self.request.get('comment_id')
-                if comment_id.isdigit():
-                    comment_id = int(comment_id)
-                    post_comment = comment.Comment.by_id(comment_id,
-                                                         post.key())
-                if post_comment and post_comment.author == self.user.username:
-                    post_comment.delete()
+                comment.Comment.db_delete(post, comment_id, self.user.username)
 
             post_params['action'] = action
 
