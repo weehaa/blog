@@ -24,19 +24,23 @@ class Comment(db.Model):
 
 
     @classmethod
-    def db_put(cls, parent_post, author, content, comment_id=None):
+    def db_put(cls, parent_post, username, content, comment_id=None):
         """Method to insert new comment or update an existing one"""
         if comment_id.isdigit():
             comment = cls.by_id(int(comment_id), parent_post.key())
-            comment.content = content
+            if comment:
+                comment.content = content
+            else:
+                return
         else:
             comment = cls(parent=parent_post,
-                                    author=author,
+                                    author=username,
                                     content=content)
             # update  comment counter for parent post
             parent_post.comment_cnt += 1
             parent_post.put()
-        comment.put()
+        if comment.author == username:
+            comment.put()
 
     @classmethod
     def db_delete(cls, parent_post, comment_id, username):
