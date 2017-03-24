@@ -1,10 +1,13 @@
+{% set post_link = "/blog/" + post.parent().username +
+    "/" + post.key().id()|string %}
+
 <div class="post">
   <div class="post-header">
     <div class="post-date">
         {{post.created.strftime("%b %d, %Y %H:%M")}}
     </div>
     <h2 class="post-title">
-        <a href="/blog/{{post.parent().username}}/{{post.key().id()}}">
+        <a href={{post_link}}>
             {{post.subject}}
         </a>
     </h2>
@@ -21,6 +24,9 @@
            title="View all {{post.parent().username}} posts">
             {{post.parent().username}}
         </a>
+    </div>
+    <div class="post-commcount">
+        <a href="{{post_link}}#comments">{{post.comment_cnt}} Comments</a>
     </div>
   </div>
 </div>
