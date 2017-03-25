@@ -10,12 +10,12 @@ class RootRedirect(handler.Handler):
     '''
     def get(self):
         # redirect to a /blog url
-        # self.redirect("/blog")
+        self.redirect("/blog")
         # self.write(blog.Blog.commentcount_fix())
-        post = blog.get_post('AVes',5034182707249152)
-        self.write(post.subject)
-
-        self.write('Likes: ' + likes.Likes.by_post(post,'user1').username)
+        # post = blog.get_post('AVes',5034182707249152)
+        # self.write(post.subject)
+        #
+        # self.write('Likes: ' + likes.Likes.by_post(post,'user1').username)
 
 
 class BlogFront(handler.Handler):
