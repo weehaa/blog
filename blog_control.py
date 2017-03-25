@@ -67,22 +67,28 @@ class PostPage(handler.Handler):
         act = self.request.get('act')
         # error while comment editing
         error = self.request.get('error')
+
+
         # retrieve post object
         post = blog.get_post(author_name, post_id)
         if not post:
             self.error(404)
             return
+
+        # retrive user's like
+        if self.user and likes.Likes.by_username(post, self.user.username):
+            like_st = 'Dislike'
+        else:
+            like_st = 'Like'
         # retrieve all comments for the post
         comments = comment.Comment.by_post(post)
-        # define error text
-        # if error:
-        #     error = 'Please, add a comment text'
 
         self.render("permalink.html", post=post,
                                       comments=comments,
                                       act=act,
                                       error=error,
-                                      edit_id=edit_id)
+                                      edit_id=edit_id,
+                                      like_st=like_st)
 
     def post(self, author_name, post_id):
         """Method handles post request for a single post page.
@@ -111,6 +117,8 @@ class PostPage(handler.Handler):
             self.error(404)
             return
 
+
+
         # if post deletion is confirmed,
         # and logged in user is an author of the post, delete the post
         if action_delete and self.user.username == author_name:
@@ -127,9 +135,18 @@ class PostPage(handler.Handler):
                 self.redirect("/blog/newpost?post_id=" + post_id)
 
             # Like/dislike post handler
-            if action == 'Like':
-                # switch like flag
-                likes.Likes.set(post, self.user.username)
+            if action in ('Like', 'Dislike'):
+                # check that user logged in and not an author of the post
+                # to prevent cheating
+                if self.user and \
+                    (post.parent().username != self.user.username):
+                    # switch like/Dislike
+                    likes.Likes.set(post, self.user.username)
+            # retrive user's like
+            if self.user and likes.Likes.by_username(post, self.user.username):
+                post_params['like_st'] = 'Dislike'
+            else:
+                post_params['like_st'] = 'Like'
 
             # Edit comment handler
             if action == 'Edit comment':

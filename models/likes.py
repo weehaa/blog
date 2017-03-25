@@ -17,8 +17,9 @@ class Likes(db.Model):
         """Put like to db for a parent post and a username
         ('Like' button pressed).
         If like already exists, delete it from db ('Dislike')
+        Update a counter in parent entity
         """
-        like = cls.by_name(parent, username)
+        like = cls.by_username(parent, username)
         if like:
             like.delete()
             parent.like_cnt -= 1
@@ -31,8 +32,8 @@ class Likes(db.Model):
 
 
     @classmethod
-    def by_name(cls, parent, username):
-        """get like for a parent post by username"""
+    def by_username(cls, parent, username):
+        """Get like for a parent post or comment by username"""
         parent_key = parent.key()
         like = cls.all()
         like.filter('username =', username)

@@ -8,8 +8,8 @@
     {{post.render() | safe}}
     <!-- show action form button if user == author of the post -->
     <form id="actions" method="post">
-    {% if user and not user == post.author %}
-        <input form="actions" type="submit" name="action" value="Like">
+    {% if user and (user != post.author) %}
+        <input form="actions" type="submit" name="action" value="{{like_st}}">
     {% endif %}
     {% if user == post.author %}
 
@@ -30,12 +30,12 @@
     <h3 class="comments-title">
         <a href="#comments">Comments</a>
     </h3>
-    {% if user and not user == post.author %}
+    {% if user and (user != post.author) %}
         <input form="actions" type="submit" name="action" value="Add comment">
     {% endif %}
     <!-- New comment form -->
     {% if act == 'Add comment' %}
-        <!-- Do not show from if user not logged in or user is an author -->
+        <!-- Do not show form if user not logged in or user is an author -->
         {% if user and not user == post.author %}
             <label>
               <div id="id_0" class="">Comment text</div>
