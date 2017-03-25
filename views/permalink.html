@@ -8,7 +8,10 @@
     {{post.render() | safe}}
     <!-- show action form button if user == author of the post -->
     <form id="actions" method="post">
-    {% if user == post.parent().username %}
+    {% if user and not user == post.author %}
+        <input form="actions" type="submit" name="action" value="Like">
+    {% endif %}
+    {% if user == post.author %}
 
             <input type="submit" name="action" value="Edit">
             <input type="submit" name="action" value="Delete">
@@ -27,10 +30,13 @@
     <h3 class="comments-title">
         <a href="#comments">Comments</a>
     </h3>
-    <input form="actions" type="submit" name="action" value="Add comment">
-    <!-- add comment form -->
+    {% if user and not user == post.author %}
+        <input form="actions" type="submit" name="action" value="Add comment">
+    {% endif %}
+    <!-- New comment form -->
     {% if act == 'Add comment' %}
-        {% if user %}
+        <!-- Do not show from if user not logged in or user is an author -->
+        {% if user and not user == post.author %}
             <label>
               <div id="id_0" class="">Comment text</div>
               <textarea  form="actions"

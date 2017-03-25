@@ -38,8 +38,9 @@ class Comment(db.Model):
                                     content=content)
             # update  comment counter for parent post
             parent_post.comment_cnt += 1
-            parent_post.put()
+
         if comment.author == username:
+            parent_post.put()
             comment.put()
 
     @classmethod

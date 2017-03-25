@@ -19,5 +19,15 @@ indexes:
 - kind: Comment
   ancestor: yes
   properties:
+  - name: content
+
+- kind: Comment
+  ancestor: yes
+  properties:
+  - name: count
+
+- kind: Comment
+  ancestor: yes
+  properties:
   - name: created
     direction: desc

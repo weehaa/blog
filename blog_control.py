@@ -1,6 +1,7 @@
 import handler
 import blog
 import comment
+import likes
 
 
 class RootRedirect(handler.Handler):
@@ -9,7 +10,12 @@ class RootRedirect(handler.Handler):
     '''
     def get(self):
         # redirect to a /blog url
-        self.redirect("/blog")
+        # self.redirect("/blog")
+        # self.write(blog.Blog.commentcount_fix())
+        post = blog.get_post('AVes',5034182707249152)
+        self.write(post.subject)
+
+        self.write('Likes: ' + likes.Likes.by_post(post,'user1').username)
 
 
 class BlogFront(handler.Handler):
@@ -69,8 +75,8 @@ class PostPage(handler.Handler):
         # retrieve all comments for the post
         comments = comment.Comment.by_post(post)
         # define error text
-        if error:
-            error = 'Please, add a comment text'
+        # if error:
+        #     error = 'Please, add a comment text'
 
         self.render("permalink.html", post=post,
                                       comments=comments,
@@ -119,6 +125,12 @@ class PostPage(handler.Handler):
             if action == 'Edit':
                 # redirect user to postform page with post id
                 self.redirect("/blog/newpost?post_id=" + post_id)
+
+            # Like/dislike post handler
+            if action == 'Like':
+                # switch like flag
+                likes.Likes.set(post, self.user.username)
+
             # Edit comment handler
             if action == 'Edit comment':
                 comment_id = self.request.get('comment_id')
@@ -126,10 +138,16 @@ class PostPage(handler.Handler):
                 url_arg = 'edit_id=%s#id_%s' % (comment_id, comment_id)
                 self.redirect("/blog/%s/%s?%s" % \
                                 (author_name, post_id, url_arg))
-
+            # Add comment handler
             if action == 'Add comment':
                 # redirect user to this page with anchor to empty comment form
-                url_arg = 'act=Add comment#id_0'
+                if self.user.username == author_name:
+                    error = "You can't comment your own post"
+                    url_arg = "error=%s#id_0" % error
+
+                else:
+                    url_arg = 'act=Add comment#id_0'
+
                 self.redirect("/blog/%s/%s?%s" % \
                                 (author_name, post_id, url_arg))
 
@@ -143,10 +161,12 @@ class PostPage(handler.Handler):
                                             comment_id=comment_id)
                 else:
                     if comment_id:
-                        url_arg = 'edit_id=%s&error=True#id_%s' % \
-                                    (comment_id, comment_id)
+                        error = "Please, add some content"
+                        url_arg = "edit_id=%s&error=%s#id_%s" % \
+                                    (comment_id, error, comment_id)
                     else:
-                        url_arg = 'act=Add comment&error=True#id_0'
+                        error = "Please, add some content"
+                        url_arg = "act=Add comment&error=%s#id_0" % error
 
                     self.redirect("/blog/%s/%s?%s" % \
                                     (author_name, post_id, url_arg))

@@ -20,8 +20,12 @@ class Blog(db.Model):
         # replace new line symbols with <br> tags
         self._render_text = self.content.replace('\n', '<br>')
 
-        # get an author of the post = it's parent User
-        author = self.parent()
+        # get an author of the post = it's parent username
+        if self.parent():
+            self.author = self.parent().username
+        else:
+            # if user is deleted, but his post exist
+            self.author = "Unknown"
 
         base_handler = handler.BaseHandler()
         return base_handler.render_str("post.html",
@@ -47,6 +51,17 @@ class Blog(db.Model):
                 return
         return query.run(limit=limit)
 
+    @classmethod
+    def commentcount_fix(cls, posts=None):
+        if not posts:
+            posts = cls.get_posts()
+        for post in posts:
+            query = db.GqlQuery("select * from Comment where ANCESTOR IS :1",
+                                post)
+            cnt = query.count()
+            post.comment_cnt = cnt
+            post.put()
+        return "fix complete"
 
 def get_post(author_name, post_id):
     """Get post by post_id and username"""

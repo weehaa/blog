@@ -1,4 +1,4 @@
-{% set post_link = "/blog/" + post.parent().username +
+{% set post_link = "/blog/" + post.author +
     "/" + post.key().id()|string %}
 
 <div class="post">
@@ -20,13 +20,16 @@
   <div class="post-footer">
     <div class="post-author">
       Posted by
-        <a href="/blog?author_name={{post.parent().username}}"
-           title="View all {{post.parent().username}} posts">
-            {{post.parent().username}}
+        <a href="/blog?author_name={{post.author}}"
+           title="View all {{post.author}} posts">
+            {{post.author}}
         </a>
     </div>
     <div class="post-commcount">
         <a href="{{post_link}}#comments">{{post.comment_cnt}} Comments</a>
+    </div>
+    <div class="post-likecount">
+        {{post.like_cnt}} Likes
     </div>
   </div>
 </div>

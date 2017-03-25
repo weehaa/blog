@@ -50,7 +50,7 @@ class SignupPage(handler.Handler):
             new_user = usr.register(username, password, email)
             new_user.put()
             self.login(new_user)
-            self.redirect("/welcome")
+            self.redirect("/blog/welcome")
 
 
 class WelcomePage(handler.Handler):
