@@ -1,9 +1,10 @@
 """controller module for a post page + comments"""
 import handler
+import post_control
 import blog
 import comment
 
-class PostCommentsPage(handler.Handler):
+class PostCommentsPage(post_control.PostPage):
     """
     Class for requested post page with comments.
     If auhtor of the post is logged in,
@@ -14,7 +15,8 @@ class PostCommentsPage(handler.Handler):
         parameters from url + anchor to scroll to the focused action item of
         the page
         """
-        render_params = {}
+        #call a inherited method from PostPage Class
+        render_params = self.get_postparams(author_name, post_id)
         # comment id that is edited
         render_params['edit_id'] = self.request.get('edit_id')
         # user action
@@ -22,16 +24,8 @@ class PostCommentsPage(handler.Handler):
         # error while comment editing
         render_params['error'] = self.request.get('error')
 
-        # retrieve post object
-        post = blog.get_post(author_name, post_id)
-        if not post:
-            self.error(404)
-            return
-        else:
-            render_params['post'] = post
-
         # retrieve all comments for the post
-        render_params['comments'] = comment.Comment.by_post(post)
+        render_params['comments'] = comment.Comment.by_post(render_params['post'])
 
         self.render("comments.html", **render_params)
 
