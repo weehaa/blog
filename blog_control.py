@@ -195,6 +195,8 @@ class PostPage(handler.Handler):
         self.render("permalink.html", **post_params)
 
 
+
+
 class NewPostFormPage(handler.Handler):
     """Class for page form submission to add a new or edit an existing post"""
     def get(self):
@@ -262,5 +264,4 @@ app = handler.webapp2.WSGIApplication([
     ('/blog/newpost', NewPostFormPage),
     # post page (/blog/username/post_id )
     ('/blog/([A-Za-z0-9\-\_]+)/(\d+)', PostPage)
-
 ], debug=True)

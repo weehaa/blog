@@ -25,58 +25,8 @@
 
     {% endif %}
     </form>
-
-    <!-- comments block -->
-    <h3 class="comments-title">
-        <a href="#comments">Comments</a>
-    </h3>
-    {% if user and (user != post.author) %}
-        <input form="actions" type="submit" name="action" value="Add comment">
-    {% endif %}
-    <!-- New comment form -->
-    {% if act == 'Add comment' %}
-        <!-- Do not show form if user not logged in or user is an author -->
-        {% if user and not user == post.author %}
-            <label>
-              <div id="id_0" class="">Comment text</div>
-              <textarea  form="actions"
-                        class="textarea" name="content">{{content}}</textarea>
-                <div class="error">
-                  {{error}}
-                </div>
-            </label>
-
-            <input form="actions" type="submit"
-                   name="action" value="Submit comment">
-            <input form="actions" type="submit"
-                   name="action_cancel" value="Cancel">
-       {% else %}
-       <div class="error">
-         Please, <a href="/blog/login">login</a> to write a comment
-       </div>
-       {% endif %}
-    {% endif %}
-
-    {% if comments %}
-
-        {% for comment in comments %}
-
-            {{ comment.render(comment.key().id()|string == edit_id) | safe }}
-            {% if comment.author == user %}
-                <form id="form_{{comment.key().id()}}" method="post">
-                    <input type="hidden"
-                           name="comment_id" value="{{comment.key().id()}}">
-                  {% if not edit_id %}
-                        <input type="submit"
-                               name="action" value="Edit comment">
-                        <input type="submit"
-                               name="action" value="Delete comment">
-                  {% endif %}
-               </form>
-            {% endif %}
-        {% endfor %}
-    {% endif %}
-
 {% endif %}
+{% block comments %}
 
+{% endblock %}
 {% endblock %}
