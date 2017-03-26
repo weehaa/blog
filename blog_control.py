@@ -1,3 +1,4 @@
+"""controller module for a blog pages"""
 import handler
 import blog
 import comment
@@ -9,6 +10,7 @@ class RootRedirect(handler.Handler):
     Class handler for the root url
     '''
     def get(self):
+        """get request handler"""
         # redirect to a /blog url
         self.redirect("/blog")
         # self.write(blog.Blog.commentcount_fix())
@@ -61,34 +63,31 @@ class PostPage(handler.Handler):
         parameters from url + anchor to scroll to the focused action item of
         the page
         """
+        render_params = {}
         # comment id that is edited
-        edit_id = self.request.get('edit_id')
+        render_params['edit_id'] = self.request.get('edit_id')
         # user action
-        act = self.request.get('act')
+        render_params['act'] = self.request.get('act')
         # error while comment editing
-        error = self.request.get('error')
-
+        render_params['error'] = self.request.get('error')
 
         # retrieve post object
         post = blog.get_post(author_name, post_id)
         if not post:
             self.error(404)
             return
+        else:
+            render_params['post'] = post
 
         # retrive user's like
         if self.user and likes.Likes.by_username(post, self.user.username):
-            like_st = 'Dislike'
+            render_params['like_st'] = 'Dislike'
         else:
-            like_st = 'Like'
+            render_params['like_st'] = 'Like'
         # retrieve all comments for the post
-        comments = comment.Comment.by_post(post)
+        render_params['comments'] = comment.Comment.by_post(post)
 
-        self.render("permalink.html", post=post,
-                                      comments=comments,
-                                      act=act,
-                                      error=error,
-                                      edit_id=edit_id,
-                                      like_st=like_st)
+        self.render("permalink.html", **render_params)
 
     def post(self, author_name, post_id):
         """Method handles post request for a single post page.
@@ -117,8 +116,6 @@ class PostPage(handler.Handler):
             self.error(404)
             return
 
-
-
         # if post deletion is confirmed,
         # and logged in user is an author of the post, delete the post
         if action_delete and self.user.username == author_name:
@@ -138,8 +135,7 @@ class PostPage(handler.Handler):
             if action in ('Like', 'Dislike'):
                 # check that user logged in and not an author of the post
                 # to prevent cheating
-                if self.user and \
-                    (post.parent().username != self.user.username):
+                if self.user and (author_name != self.user.username):
                     # switch like/Dislike
                     likes.Likes.set(post, self.user.username)
             # retrive user's like
@@ -153,8 +149,8 @@ class PostPage(handler.Handler):
                 comment_id = self.request.get('comment_id')
                 # redirect user to this page with an anchor to edited comment
                 url_arg = 'edit_id=%s#id_%s' % (comment_id, comment_id)
-                self.redirect("/blog/%s/%s?%s" % \
-                                (author_name, post_id, url_arg))
+                self.redirect("/blog/%s/%s?%s" %
+                              (author_name, post_id, url_arg))
             # Add comment handler
             if action == 'Add comment':
                 # redirect user to this page with anchor to empty comment form
@@ -165,8 +161,8 @@ class PostPage(handler.Handler):
                 else:
                     url_arg = 'act=Add comment#id_0'
 
-                self.redirect("/blog/%s/%s?%s" % \
-                                (author_name, post_id, url_arg))
+                self.redirect("/blog/%s/%s?%s" %
+                              (author_name, post_id, url_arg))
 
             # handler for Submit new or edited comment
             if action == 'Submit comment':
@@ -174,20 +170,19 @@ class PostPage(handler.Handler):
                 comment_id = self.request.get('comment_id')
                 if content:
                     comment.Comment.db_put(post, self.user.username,
-                                            content=content,
-                                            comment_id=comment_id)
+                                           content=content,
+                                           comment_id=comment_id)
                 else:
                     if comment_id:
                         error = "Please, add some content"
                         url_arg = "edit_id=%s&error=%s#id_%s" % \
-                                    (comment_id, error, comment_id)
+                                  (comment_id, error, comment_id)
                     else:
                         error = "Please, add some content"
                         url_arg = "act=Add comment&error=%s#id_0" % error
 
-                    self.redirect("/blog/%s/%s?%s" % \
-                                    (author_name, post_id, url_arg))
-
+                    self.redirect("/blog/%s/%s?%s" %
+                                  (author_name, post_id, url_arg))
 
             if action == 'Delete comment':
                 comment_id = self.request.get('comment_id')
@@ -201,11 +196,13 @@ class PostPage(handler.Handler):
 
 
 class NewPostFormPage(handler.Handler):
+    """Class for page form submission to add a new or edit an existing post"""
     def get(self):
+        """get request handler for a post form page"""
         referer = self.request.referer
         post_id = self.request.get("post_id")
         subject = content = ''
-         # show newpost page if user has logged in
+        # show newpost page if user has logged in
         if self.user:
             if post_id:
                 post = blog.get_post(self.user.username, post_id)
@@ -219,6 +216,7 @@ class NewPostFormPage(handler.Handler):
             self.redirect("/blog/login")
 
     def post(self):
+        """post request handler for a post form page"""
         referer = self.request.get("referer")
         post_id = self.request.get("post_id")
         subject = self.request.get("subject")
@@ -247,11 +245,12 @@ class NewPostFormPage(handler.Handler):
             error = "we need both a subject and some content!"
             self.render_post(referer, subject, content, error)
 
-    def render_post(self, referer, subject, content,  error=''):
-        self.render("newpost.html", referer=referer,
-                                    subject=subject,
-                                    content=content,
-                                    error=error)
+    def render_post(self, referer, subject, content, error=''):
+        self.render("newpost.html",
+                    referer=referer,
+                    subject=subject,
+                    content=content,
+                    error=error)
 
 
 app = handler.webapp2.WSGIApplication([
@@ -263,4 +262,5 @@ app = handler.webapp2.WSGIApplication([
     ('/blog/newpost', NewPostFormPage),
     # post page (/blog/username/post_id )
     ('/blog/([A-Za-z0-9\-\_]+)/(\d+)', PostPage)
+
 ], debug=True)
