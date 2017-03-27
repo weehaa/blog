@@ -92,6 +92,7 @@ class PostPage(handler.Handler):
                 post_params['like_st'] = 'Like'
 
             post_params['action'] = action
+        return post_params
 
 app = handler.webapp2.WSGIApplication([
     ('/blog/([A-Za-z0-9\-\_]+)/(\d+)', PostPage)

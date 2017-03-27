@@ -118,7 +118,5 @@ app = handler.webapp2.WSGIApplication([
     # front page
     ('/blog/?', BlogFront),
     # new post form
-    ('/blog/newpost', NewPostFormPage),
-    # post page (/blog/username/post_id )
-    ('/blog/([A-Za-z0-9\-\_]+)/(\d+)', PostPage)
+    ('/blog/newpost', NewPostFormPage)
 ], debug=True)

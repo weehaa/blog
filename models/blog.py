@@ -1,15 +1,23 @@
+"""model module contains a class for post db GAE entity """
 import handler
 from google.appengine.ext import db
 from user import User
 
-class Blog(db.Model):
 
-    subject = db.StringProperty(required = True)
-    content = db.TextProperty(required = True)
-    created = db.DateTimeProperty(auto_now_add = True)
-    last_modified = db.DateTimeProperty(auto_now = True)
-    comment_cnt = db.IntegerProperty(required = True, default = 0)
-    like_cnt = db.IntegerProperty(required = True, default = 0)
+class Blog(db.Model):
+    """A class for Blog db GAE entity"""
+    # post title property
+    subject = db.StringProperty(required=True)
+    # post text propperty
+    content = db.TextProperty(required=True)
+    # Creation date time
+    created = db.DateTimeProperty(auto_now_add=True)
+    # Modification date time
+    last_modified = db.DateTimeProperty(auto_now=True)
+    # Comments counter
+    comment_cnt = db.IntegerProperty(required=True, default=0)
+    # likes counter
+    like_cnt = db.IntegerProperty(required=True, default=0)
 
     def render(self):
         """
@@ -62,6 +70,7 @@ class Blog(db.Model):
             post.comment_cnt = cnt
             post.put()
         return "fix complete"
+
 
 def get_post(author_name, post_id):
     """Get post by post_id and username"""

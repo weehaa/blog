@@ -9,10 +9,11 @@ import jinja2
 import webapp2
 from user import User
 
-#settings for a jinja environment
+# settings for a jinja environment
 template_dir = os.path.join(os.path.dirname(__file__), '../views')
 jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir),
                                autoescape=True)
+
 
 class BaseHandler(webapp2.RequestHandler):
     """
@@ -31,6 +32,7 @@ class BaseHandler(webapp2.RequestHandler):
         """ write rendered template with parameters """
         self.write(self.render_str(template, **kw))
 
+
 class Handler(BaseHandler):
     """
     This class inherits BaseHandler and contains initialize methods for user
@@ -40,7 +42,7 @@ class Handler(BaseHandler):
         """ this function is called before every request """
         webapp2.RequestHandler.initialize(self, *a, **kw)
         uid = self.read_secure_cookie('user_id')
-        #check if uid exists an store it in self.user
+        # check if uid exists an store it in self.user
         if uid and User.by_id(int(uid)):
             self.user = User.by_id(int(uid))
         else:

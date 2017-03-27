@@ -1,13 +1,15 @@
+""" This module contains a Class for Like objects """
 import handler
 from google.appengine.ext import db
 from user import User
 
-class Comment(db.Model):
 
-    author = db.TextProperty(required = True)
-    content = db.TextProperty(required = True)
-    created = db.DateTimeProperty(auto_now_add = True)
-    last_modified = db.DateTimeProperty(auto_now = True)
+class Comment(db.Model):
+    """A class for Comment GAE db entity"""
+    author = db.TextProperty(required=True)
+    content = db.TextProperty(required=True)
+    created = db.DateTimeProperty(auto_now_add=True)
+    last_modified = db.DateTimeProperty(auto_now=True)
 
     def render(self, isedit=False):
         """
@@ -22,7 +24,6 @@ class Comment(db.Model):
                                        comment=self,
                                        isedit=isedit)
 
-
     @classmethod
     def db_put(cls, parent_post, username, content, comment_id=None):
         """Method to insert new comment or update an existing one"""
@@ -34,8 +35,8 @@ class Comment(db.Model):
                 return
         else:
             comment = cls(parent=parent_post,
-                                    author=username,
-                                    content=content)
+                          author=username,
+                          content=content)
             # update  comment counter for parent post
             parent_post.comment_cnt += 1
 
@@ -45,6 +46,7 @@ class Comment(db.Model):
 
     @classmethod
     def db_delete(cls, parent_post, comment_id, username):
+        """Delete comment after user check"""
         if comment_id.isdigit():
             comment = cls.by_id(int(comment_id), parent_post.key())
             if comment and comment.author == username:

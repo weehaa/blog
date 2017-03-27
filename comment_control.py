@@ -39,7 +39,7 @@ class PostCommentsPage(post_control.PostPage):
         post_id -- post id, taken from url
         """
         url = '/blog/%s/%s/comments' % (author_name, post_id)
-        post_params = {}
+        post_params = self.post_postparams(author_name, post_id)
 
         action = self.request.get('action')
 
