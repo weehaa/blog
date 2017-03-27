@@ -4,6 +4,7 @@ import post_control
 import blog
 import comment
 
+
 class PostCommentsPage(post_control.PostPage):
     """
     Class for requested post page with comments.
@@ -15,7 +16,7 @@ class PostCommentsPage(post_control.PostPage):
         parameters from url + anchor to scroll to the focused action item of
         the page
         """
-        #call a inherited method from PostPage Class
+        # call a inherited method from PostPage Class
         render_params = self.get_postparams(author_name, post_id)
         # comment id that is edited
         render_params['edit_id'] = self.request.get('edit_id')
@@ -23,10 +24,9 @@ class PostCommentsPage(post_control.PostPage):
         render_params['act'] = self.request.get('act')
         # error while comment editing
         render_params['error'] = self.request.get('error')
-
         # retrieve all comments for the post
-        render_params['comments'] = comment.Comment.by_post(render_params['post'])
-
+        render_params['comments'] = \
+            comment.Comment.by_post(render_params['post'])
         self.render("comments.html", **render_params)
 
     def post(self, author_name, post_id):

@@ -39,7 +39,7 @@ class SignupPage(handler.Handler):
 
         # if any error is present - render the same signup page
         if error_username or error_password \
-            or error_verify or error_email:
+           or error_verify or error_email:
             self.render("signup.html", username=username, email=email,
                         error_username=error_username,
                         error_password=error_password,

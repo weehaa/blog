@@ -3,6 +3,7 @@ import handler
 import blog
 import likes
 
+
 class PostPage(handler.Handler):
     """
     Class for requested post page. If auhtor of the post is logged in,

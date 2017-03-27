@@ -61,6 +61,7 @@ class Blog(db.Model):
 
     @classmethod
     def commentcount_fix(cls, posts=None):
+        """method for fix comments count"""
         if not posts:
             posts = cls.get_posts()
         for post in posts:

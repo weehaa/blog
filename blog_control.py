@@ -3,7 +3,6 @@ import handler
 import blog
 
 
-
 class RootRedirect(handler.Handler):
     '''
     Class handler for the root url
@@ -50,8 +49,6 @@ class BlogFront(handler.Handler):
                     author_name=author_name,
                     limit=limit,
                     posts=posts)
-
-
 
 
 class NewPostFormPage(handler.Handler):
