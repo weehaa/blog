@@ -10,7 +10,7 @@ class PostPage(handler.Handler):
     he can edit or delete post on the page.
     """
     def get(self, author_name, post_id):
-        """get requestmethod handler. Renders single post page base on
+        """get request method handler. Renders single post page base on
         parameters from url + anchor to scroll to the focused action item of
         the page
         """
@@ -18,6 +18,9 @@ class PostPage(handler.Handler):
         self.render("permalink.html", **render_params)
 
     def get_postparams(self, author_name, post_id):
+        """Metod returns render parameters for a get requests.
+        Retrieves post object and "like" status for logged in user.
+        """
         render_params = {}
         # retrieve post object
         post = blog.get_post(author_name, post_id)
@@ -35,13 +38,15 @@ class PostPage(handler.Handler):
         return render_params
 
     def post(self, author_name, post_id):
+        """post request handler. Renders single post page base on
+        parameters from post request """
         render_params = self.post_postparams(author_name, post_id)
         self.render("permalink.html", **render_params)
 
     def post_postparams(self, author_name, post_id):
         """Method handles post request for a single post page.
         Returns response, based on user actions from permalink.html
-        'actions' form, such as delete post with confirmation, edit post,
+        'actions' form, such as delete post (with confirmation), edit post,
         add comment, like or dislike a post.
         Adds comment to a database after comment content validation.
         Parameters:
