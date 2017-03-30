@@ -98,6 +98,7 @@ body {
     margin: 30px 0 5px;
     box-sizing: border-box;
 }
+
 .post-title, .post-date,
 .post-author, .post-commcount, .post-likecount, .post-features {
     display: inline-block;
