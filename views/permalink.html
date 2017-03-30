@@ -9,18 +9,23 @@
     <!-- show action form button if user == author of the post -->
     <form id="actions" method="post">
     {% if user and (user != post.author) %}
-        <input form="actions" type="submit" name="action" value="{{like_st}}">
+        <input class="like-button button" form="actions"
+               type="submit" name="action" value="{{like_st}}">
     {% endif %}
     {% if user == post.author %}
 
-            <input type="submit" name="action" value="Edit">
-            <input type="submit" name="action" value="Delete">
+            <input class="button" type="submit"
+                   name="action" value="Edit">
+            <input class="button" type="submit"
+                   name="action" value="Delete">
 
         {% endif %}
             {% if action == 'Delete' %}
                 <span class="error">Confirm post deletion</span>
-                <input type="submit" name="action_delete" value="Confirm">
-                <input type="submit" name="action_cancel" value="Cancel">
+                <input class="button" type="submit"
+                       name="action_delete" value="Confirm">
+                <input class="button" type="submit"
+                       name="action_cancel" value="Cancel">
 
 
     {% endif %}

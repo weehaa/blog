@@ -11,8 +11,7 @@
     <!-- Do not show form if user not logged in or user is an author -->
     {% if user and not user == post.author %}
         <label>
-          <div id="id_0" class="">Comment text</div>
-          <textarea  form="actions"
+          <textarea id="id_0" form="actions"
                     class="textarea" name="content">{{content}}</textarea>
             <div class="error">
               {{error}}

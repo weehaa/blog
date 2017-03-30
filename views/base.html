@@ -2,32 +2,39 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Multiuser Blog by AVes</title>
+    <title>Multiuser Blog</title>
     <link rel="stylesheet" href="/static/main.css">
   </head>
   <body>
     <header>
       <div class="top-menu container">
         {% if user %}
-            <span>
-              {{user}} | <a href="/blog/logout">Logout</a>
+            <span class="account-menu">
+              <span class="username">{{user}}</span>
+              | <a href="/blog/logout">Logout</a>
             </span>
-            <span>
-             | <a href="/blog/newpost">New Post</a>
-            </span>
-            <span>
-             | <a href="/blog?author_name={{user}}">My Posts</a>
-            </span>
+            <ul class="main-menu">
+                <li class="menu-item">
+                 <a href="/blog">Home</a>
+                </li>
+                <li class="menu-item">
+                    <a href="/blog/newpost">New Post</a>
+                </li>
+                <li class="menu-item">
+                    <a href="/blog?author_name={{user}}">My Posts</a>
+                </li>
+            </ul>
         {% else %}
-            <span class={% if user %}"invisible"{% endif %}>
+            <span class="account-menu">
                 <a href="/blog/login">Login</a>
                  |
                 <a href="/blog/signup">Signup</a>
             </span>
         {% endif %}
       </div>
-      <h1>
-        <a href="/blog">MultiUser Blog</a></h1>
+      <a class="title-link" href="/blog">
+          <h1 class="blog-title">MultiUser Blog</h1>
+      </a>
     </header>
     <article class="container">
       {% block content %}

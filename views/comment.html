@@ -15,8 +15,11 @@
   </div>
 
   {% if isedit %}
-    <textarea form="actions" class="textarea"
+    <textarea form="actions" class="edit-textarea"
         name="content">{{comment.content | safe}}</textarea>
+    <div class="comment-buttons">
+
+
     <div class="error">
       {{error}}
     </div>
@@ -26,6 +29,7 @@
           name="action" value="Submit comment">
     <input form="actions" type="submit"
           name="action_cancel" value="Cancel">
+    </div>
   {% else %}
   <div class="comment-content">
     {{comment._render_text | safe}}

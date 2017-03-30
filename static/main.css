@@ -1,37 +1,202 @@
-h1 {
-  text-align: center;
-  background-color: #ccc;
-  padding-left: 15px;
+@import url('https://fonts.googleapis.com/css?family=Muli');
+
+body {
+    margin: 0 auto;
+    font-family: sans-serif;
+    background: #fcfcfc;
 }
-
-/*label, input[type="submit"], .error {
-  display: block;
-  font-size: 20px;
-  text-align: center;
-  padding-right: 5px;
-  margin: 0 auto;
-}*/
-
-/*textarea {
-  font-size: 1.2em;
-  width: 50vw;
-  height: 50vh;
-  max-width: 100%;
-}*/
 
 .container {
   margin: 0 auto;
+  padding: 0 15px;
   width: 968px;
 }
 
-.invisible {
-  display: none;
+.top-menu {
+    padding: 15px 0px;
+    font-size: 1.1em;
+    background: #f7f7f7;
+}
+
+.account-menu {
+    padding-left: 20px;
+}
+
+.username {
+    font-weight: bold;
+}
+
+.main-menu {
+    display: inline-block;
+    float: right;
+    margin: 0;
+    padding-right: 20px;
+    list-style: none;
+}
+
+.menu-item {
+    display: inline-block;
+    padding: 0 10px;
+}
+
+.title {
+    font-family: 'Muli', sans-serif;
+}
+
+.blog-title {
+    margin: 0;
+    padding: 10px 0;
+    text-align: center;
+    font-size: 2.2em;
+    color: #000;
+    background: #ddd;
+}
+
+.title-link {
+    text-decoration: none;
+}
+
+.blog-filter {
+    padding: 0px 15px 10px 15px;
+    text-align: center;
+    border: none;
+    background: #eee;
+}
+
+.filter-title {
+    padding: 2px 5px;
+    display: inline-block;
+    text-align: left;
+    background: #eee;
+}
+
+.filter-item {
+    padding: 0 5px;
+}
+
+.filter-limit {
+    margin-right: 30px;
+    width: 20px;
+    border: none;
+}
+
+.filter-author {
+    margin-right: 30px;
+    width: 120px;
+    border: none;
+}
+
+.front-subtitle {
+    padding: 5px 10px;
+    margin-bottom: 30px;
+    border-bottom: 3px solid #ccc;
+    color: #444;
+}
+
+.post {
+    border-left: 7px solid #999;
+    margin: 30px 0 5px;
+    box-sizing: border-box;
+}
+.post-title, .post-date,
+.post-author, .post-commcount, .post-likecount, .post-features {
+    display: inline-block;
+    padding-left: 10px;
+}
+
+.post-features {
+    float: right;
+    margin-right: 10px;
+}
+
+.post-date {
+    font-style: italic;
+}
+
+.post-header {
+    background: #ddd;
+}
+
+.post-footer {
+    padding: 5px 0;
+    background: #eee;
+}
+
+.post-title {
+    margin: 5px 20px;
+    color: #040490;
+    font-size: 1.4em;
+}
+
+.post-content {
+    margin: 15px 25px;
 }
 
 .error {
   padding-left: 5px;
   color: red;
   transition:all 0.5s ease-out;
+}
+
+.textarea {
+    width: 100%;
+    height: 80px;
+}
+
+.like-button {
+    float: right;
+    margin-right: 0;
+}
+
+.comment {
+    position: relative;
+    border-top: 1px solid #ddd;
+    margin: 5px 0;
+}
+
+.edit-textarea {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 85%;
+    height: 83%;
+    box-sizing: border-box;
+}
+
+.comment-header {
+    float: left;
+    width: 15%;
+    min-height: 150px;
+    font-size: 0.8em;
+    word-wrap: break-word;
+    padding-right: 20px;
+    border-right: 5px solid #bbb;
+    background: #ddd;
+    box-sizing: border-box;
+}
+
+.comment-author {
+    margin: 5px;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.comment::after{
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.comment-content {
+    padding: 5px 5px 0 155px;
+    word-wrap: break-word;
+    box-sizing: border-box;
+}
+
+.comment-buttons {
+    position: absolute;
+    left: 150px;
+    top: 130px;
 }
 
 .submit_btn {
@@ -42,4 +207,8 @@ h1 {
   color: white;
   background-color: green;
   border-radius: 3px;
+}
+
+.form-subject {
+    width: 50%;
 }

@@ -6,11 +6,11 @@
     <div class="post-date">
         {{post.created.strftime("%b %d, %Y %H:%M")}}
     </div>
-    <h2 class="post-title">
-        <a href={{post_link}}>
+    <a href={{post_link}}>
+        <h2 class="post-title title">
             {{post.subject}}
-        </a>
-    </h2>
+        </h2>
+    </a>
   </div>
 
   <div class="post-content">
@@ -21,15 +21,16 @@
     <div class="post-author">
       Posted by
         <a href="/blog?author_name={{post.author}}"
-           title="View all {{post.author}} posts">
-            {{post.author}}
-        </a>
+           title="View all {{post.author}} posts">{{post.author}}</a>
     </div>
-    <div class="post-commcount">
-        <a href="{{post_link}}/comments">{{post.comment_cnt}} Comments</a>
-    </div>
-    <div class="post-likecount">
-        {{post.like_cnt}} Likes
+
+    <div class="post-features">
+        <div class="post-commcount">
+            <a href="{{post_link}}/comments">{{post.comment_cnt}} Comments</a>
+        </div>
+        <div class="post-likecount">
+            {{post.like_cnt}} Likes
+        </div>
     </div>
   </div>
 </div>

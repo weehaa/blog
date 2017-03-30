@@ -2,13 +2,13 @@
     {% block content %}
       <form method="post">
         <label>
-          <div class="">subject</div>
+          <div class="form-subject">subject</div>
           <input type="text" name="subject" value="{{subject}}">
         </label>
 
         <label>
-          <div class="">content</div>
-          <textarea name="content">{{content}}</textarea>
+          <div class="form-content">content</div>
+          <textarea class="textarea" name="content">{{content}}</textarea>
         </label>
 
         <div class="error">

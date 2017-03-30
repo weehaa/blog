@@ -19,6 +19,8 @@ class Blog(db.Model):
     # likes counter
     like_cnt = db.IntegerProperty(required=True, default=0)
 
+    #TODO: need to use separate entity for counters - last_modified date bug!
+
     def render(self):
         """
         Method for post render
