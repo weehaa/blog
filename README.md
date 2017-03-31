@@ -30,5 +30,5 @@ This app is based on MVC (model - view - controller) model.
   `permalink.html` - single post page where user can "like" or left comment to the post. The author can edit or delete his post here.</br>
   `post.html` - single post template to render it on any page</br>
   `comment.html` - single new/existing comment template for render it inside `comments.html`</br>
-  `comments.html` - "Comments" title,comment form with Add/Edit/Delete buttons</br>
+  `comments.html` - "Comments" title, comment form with Add/Edit/Delete buttons</br>
   
