@@ -1,6 +1,6 @@
 GAE multiuser blog without JS</br>
 Simple multiuser blog is built using Google App Engine
-Sample here: https://river-wave-150720.appspot.com/blog
+Sample here: https://river-wave-150720.appspot.com/blog</br>
 Only registered users may add comments and "like" posts.
 
 # Installation
