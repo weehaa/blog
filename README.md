@@ -1,5 +1,7 @@
 GAE multiuser blog without JS</br>
 Simple multiuser blog is built using Google App Engine
+Sample here: https://river-wave-150720.appspot.com/blog
+
 # Installation
 Download and Install the GAE SDK for python here: https://cloud.google.com/appengine/docs/standard/python/download
 Clone the source code to your local directory: 
