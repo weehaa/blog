@@ -55,7 +55,7 @@ class Blog(db.Model):
         if author_name:
             user = User.by_name(author_name)
             if user:
-                query.ancestor(user)
+                query.ancestor(user.key())
             # if user not found, return None
             else:
                 return

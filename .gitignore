@@ -1,2 +1,3 @@
+*.json
 *.pyc
 main_no_cookies.py
