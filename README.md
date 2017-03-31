@@ -1,4 +1,4 @@
-GAE multiuser blog without JS
+GAE multiuser blog without JS</br>
 Simple multiuser blog is built using Google App Engine
 # Installation
 Download and Install the GAE SDK for python here: https://cloud.google.com/appengine/docs/standard/python/download
