@@ -4,11 +4,30 @@ import blog
 import likes
 
 
+class EditPost(handler.Handler):
+    """ Class for a post page edit form """
+    def get(self, author_name, post_id):
+        """ Get request method handler. Renders single post page edit form """
+        if not self.user:
+            self.redirect("/blog/login")
+            return
+
+        post = blog.get_post(self.user.username, post_id)
+
+        if not post:
+            self.redirect("/blog/newpost")
+            return
+
+        self.render("newpost.html", referer=self.request.referer,
+                    subject=post.subject, content=post.content)
+
+
 class PostPage(handler.Handler):
     """
     Class for requested post page. If auhtor of the post is logged in,
     he can edit or delete post on the page.
     """
+
     def get(self, author_name, post_id):
         """get request method handler. Renders single post page base on
         parameters from url + anchor to scroll to the focused action item of
@@ -63,7 +82,7 @@ class PostPage(handler.Handler):
         # to login page.
         if (action or action_delete) and not self.user:
             self.redirect("/blog/login")
-
+            return
         # get the post object
         post = blog.get_post(author_name, post_id)
         if not post:
@@ -82,7 +101,8 @@ class PostPage(handler.Handler):
             # Edit post handler
             if action == 'Edit':
                 # redirect user to postform page with post id
-                self.redirect("/blog/newpost?post_id=" + post_id)
+                self.redirect("/blog/%s/%s/edit" %
+                              (self.user.username, str(post_id)))
 
             # Like/dislike post handler
             if action in ('Like', 'Dislike'):
@@ -101,5 +121,6 @@ class PostPage(handler.Handler):
         return post_params
 
 app = handler.webapp2.WSGIApplication([
-    ('/blog/([A-Za-z0-9\-\_]+)/(\d+)', PostPage)
+    ('/blog/([A-Za-z0-9\-\_]+)/(\d+)', PostPage),
+    ('/blog/([A-Za-z0-9\-\_]+)/(\d+)/edit', EditPost)
 ], debug=True)

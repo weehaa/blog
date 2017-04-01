@@ -85,6 +85,7 @@ class Handler(BaseHandler):
         if cookie_val and self.check_secure_val(cookie_val):
             return self.check_secure_val(cookie_val)
 
+
     def login(self, user):
         """ sets secure cookie on user login """
         self.set_secure_cookie('user_id', str(user.key().id()))

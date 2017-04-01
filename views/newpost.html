@@ -1,27 +1,24 @@
 {% extends "base.html" %}
-    {% block content %}
-      <form method="post">
-        <label>
-          <div class="form-subject">subject</div>
-          <input type="text" name="subject" value="{{subject}}">
-        </label>
+{% block content %}
+  <form method="post">
+    <label>
+      <div class="form-subject">subject</div>
+      <input type="text" name="subject" value="{{subject}}">
+    </label>
 
-        <label>
-          <div class="form-content">content</div>
-          <textarea class="textarea" name="content">{{content}}</textarea>
-        </label>
+    <label>
+      <div class="form-content">content</div>
+      <textarea class="textarea" name="content">{{content}}</textarea>
+    </label>
 
-        <div class="error">
-          {{error}}
-        </div>
-        <input type="hidden" name="referer" value="{{referer}}">
-        <input type="submit" value="Submit">
-        <a href={% if referer %}"{{referer}}"{% else %}"/blog"{% endif %}
-           title="Cancel edit">
-           Cancel
-        </a>
-
-
-      </form>
-
-    {% endblock %}
+    <div class="error">
+      {{error}}
+    </div>
+    <input type="hidden" name="referer" value="{{referer}}">
+    <input type="submit" value="Submit">
+    <a href={% if referer %}"{{referer}}"{% else %}"/blog"{% endif %}
+       title="Cancel edit">
+       Cancel
+    </a>
+  </form>
+{% endblock %}

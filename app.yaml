@@ -9,6 +9,8 @@ handlers:
   script: account_control.app
 - url: /blog/([A-Za-z0-9\-\_]+)/(\d+)
   script: post_control.app
+- url: /blog/([A-Za-z0-9\-\_]+)/(\d+)/edit
+  script: post_control.app
 - url: /blog/([A-Za-z0-9\-\_]+)/(\d+)/comments
   script: comment_control.app
 - url: /.*
