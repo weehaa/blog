@@ -4,13 +4,12 @@ import blog
 import likes
 
 
-class EditPost(handler.Handler):
+class EditPost(handler.PostHandler):
+
     """ Class for a post page edit form """
     def get(self, author_name, post_id):
         """ Get request method handler. Renders single post page edit form """
-        if not self.user:
-            self.redirect("/blog/login")
-            return
+
 
         post = blog.get_post(self.user.username, post_id)
 
@@ -20,6 +19,12 @@ class EditPost(handler.Handler):
 
         self.render("newpost.html", referer=self.request.referer,
                     subject=post.subject, content=post.content)
+
+    def post(self):
+        """post request handler for a edit post form page"""
+        if not self.user:
+            self.redirect("/blog/login")
+            return
 
 
 class PostPage(handler.Handler):

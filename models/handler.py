@@ -36,7 +36,7 @@ class BaseHandler(webapp2.RequestHandler):
 class Handler(BaseHandler):
     """
     This class inherits BaseHandler and contains initialize methods for user
-    lodded in|out check and cookies processing
+    logged in|out check and cookies processing
     """
     def initialize(self, *a, **kw):
         """ this function is called before every request """
@@ -93,3 +93,14 @@ class Handler(BaseHandler):
     def logout(self):
         """ delete cookie on user logout """
         self.response.headers.add_header('Set-Cookie', "user_id=; Path=/")
+
+
+class PostHandler(Handler):
+    """
+    This class inherits Handler and contains initialize method that redirects
+    to login page if user is not logged in
+    """
+    def initialize(self, *a, **kw):
+        Handler.initialize(self, *a, **kw)
+        if not self.user:
+            self.redirect("/blog/login", abort=True)
