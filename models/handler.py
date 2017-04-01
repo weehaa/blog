@@ -95,7 +95,7 @@ class Handler(BaseHandler):
         self.response.headers.add_header('Set-Cookie', "user_id=; Path=/")
 
 
-class PostHandler(Handler):
+class UserPostHandler(Handler):
     """
     This class inherits Handler and contains initialize method that redirects
     to login page if user is not logged in

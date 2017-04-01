@@ -4,27 +4,38 @@ import blog
 import likes
 
 
-class EditPost(handler.PostHandler):
-
+class EditPost(handler.UserPostHandler):
     """ Class for a post page edit form """
     def get(self, author_name, post_id):
         """ Get request method handler. Renders single post page edit form """
-
-
-        post = blog.get_post(self.user.username, post_id)
-
-        if not post:
-            self.redirect("/blog/newpost")
-            return
-
-        self.render("newpost.html", referer=self.request.referer,
+        post = self.get_post(post_id)
+        self.render("newpost.html", post_id=post_id,
                     subject=post.subject, content=post.content)
 
-    def post(self):
-        """post request handler for a edit post form page"""
-        if not self.user:
-            self.redirect("/blog/login")
-            return
+    def post(self, author_name, post_id):
+        """Post request handler for a edit post form page"""
+        # if not the author tries to edit, then redirect to empty form
+        post = self.get_post(post_id)
+        subject = self.request.get("subject")
+        content = self.request.get("content")
+        if subject and content:
+            post.subject = subject
+            post.content = content
+            post.put()
+            self.redirect("/blog/%s/%s" % (self.user.username, str(post_id)))
+        else:
+            error = "Subject and content should not be blank!"
+            self.render("newpost.html", post_id=post_id,
+                        subject=subject, content=content,
+                        error=error)
+
+    def get_post(self, post_id):
+        """ returns post object by post_id or redirects to newpost form"""
+        post = blog.get_post(self.user.username, post_id)
+        if not post:
+            self.redirect("/blog/newpost", abort=True)
+        else:
+            return post
 
 
 class PostPage(handler.Handler):
