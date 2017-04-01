@@ -64,9 +64,15 @@ class NewPostFormPage(handler.Handler):
             self.render_post(referer, subject, content)
         else:
             self.redirect("/blog/login")
+            return
 
     def post(self):
         """post request handler for a post form page"""
+
+        if not self.user:
+            self.redirect("/blog/login")
+            return
+
         referer = self.request.get("referer")
         post_id = self.request.get("post_id")
         subject = self.request.get("subject")
