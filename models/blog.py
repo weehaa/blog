@@ -96,10 +96,7 @@ class Blog(db.Model):
             post.put()
         return "fix complete"
 
-
-
 def get_post(author_name, post_id):
     """Get post by post_id and username"""
     author_key = User.by_name(author_name).key()
-    post_key = db.Key.from_path('Blog', int(post_id), parent=author_key)
-    return db.get(post_key)
+    return Blog.get_by_id(int(post_id), parent=author_key)

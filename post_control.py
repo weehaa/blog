@@ -3,17 +3,19 @@ import handler
 import blog
 import likes
 
-class LikePost(handler.Handler):
+
+class LikePost(handler.UserPostHandler):
     """ Class for a post page edit form """
     def get(self, author_name, post_id):
         """ Get request method handler. Sets like/dislike """
         post = blog.get_post(author_name, post_id)
         if not post:
-            self.write(post_id + '  ' + author_name)
+            self.error(404)
             return
-        # switch like/Dislike
-        likes.Likes.set(post, self.user.username)
-        self.redirect("/blog/%s/%s" % (self.user.username, str(post_id)))
+        if self.user.username != author_name:
+            # switch like/Dislike
+            likes.Likes.set(post, self.user.username)
+        self.redirect("/blog/%s/%s" % (author_name, str(post_id)))
 
 
 class DeletePost(handler.UserPostHandler):
@@ -124,7 +126,7 @@ class PostPage(handler.Handler):
         # Like/dislike post handler
         if action in ('Like', 'Dislike'):
             self.redirect("/blog/%s/%s/like" %
-                          (self.user.username, str(post_id)))
+                          (author_name, str(post_id)))
         # retrive user's like
         if self.user and likes.Likes.by_username(post, self.user.username):
             post_params['like_st'] = 'Dislike'
