@@ -3,6 +3,18 @@ import handler
 import blog
 import likes
 
+class LikePost(handler.Handler):
+    """ Class for a post page edit form """
+    def get(self, author_name, post_id):
+        """ Get request method handler. Sets like/dislike """
+        post = blog.get_post(author_name, post_id)
+        if not post:
+            self.write(post_id + '  ' + author_name)
+            return
+        # switch like/Dislike
+        likes.Likes.set(post, self.user.username)
+        self.redirect("/blog/%s/%s" % (self.user.username, str(post_id)))
+
 
 class DeletePost(handler.UserPostHandler):
     """ Delete post handler """
@@ -88,59 +100,43 @@ class PostPage(handler.Handler):
         """
         post_params = {}
 
-
-        # action_delete is a confirmed deletion of the post
-        action_delete = self.request.get('action_delete')
         action = self.request.get('action')
 
         if action == 'Delete':
             self.redirect("/blog/%s/%s/delete" %
                           (self.user.username, str(post_id)))
 
-        # if action is perfomed by not logged-in user, redirect him
-        # to login page.
-        if (action or action_delete) and not self.user:
-            self.redirect("/blog/login")
-            return
         # get the post object
         post = blog.get_post(author_name, post_id)
         if not post:
             self.error(404)
             return
 
-        # if post deletion is confirmed,
-        # and logged in user is an author of the post, delete the post
-        if action_delete and self.user.username == author_name:
-            post.delete()
-            post_params['post_deleted'] = True
+        post_params['post'] = post
+
+        # user actions handlers block
+        # Edit post handler
+        if action == 'Edit':
+            # redirect user to post form page with post id
+            self.redirect("/blog/%s/%s/edit" %
+                          (self.user.username, str(post_id)))
+
+        # Like/dislike post handler
+        if action in ('Like', 'Dislike'):
+            self.redirect("/blog/%s/%s/like" %
+                          (self.user.username, str(post_id)))
+        # retrive user's like
+        if self.user and likes.Likes.by_username(post, self.user.username):
+            post_params['like_st'] = 'Dislike'
         else:
-            post_params['post'] = post
+            post_params['like_st'] = 'Like'
 
-            # user actions handlers block
-            # Edit post handler
-            if action == 'Edit':
-                # redirect user to post form page with post id
-                self.redirect("/blog/%s/%s/edit" %
-                              (self.user.username, str(post_id)))
-
-            # Like/dislike post handler
-            if action in ('Like', 'Dislike'):
-                # check that user logged in and not an author of the post
-                # to prevent cheating
-                if self.user and (author_name != self.user.username):
-                    # switch like/Dislike
-                    likes.Likes.set(post, self.user.username)
-            # retrive user's like
-            if self.user and likes.Likes.by_username(post, self.user.username):
-                post_params['like_st'] = 'Dislike'
-            else:
-                post_params['like_st'] = 'Like'
-
-            post_params['action'] = action
+        post_params['action'] = action
         return post_params
 
 app = handler.webapp2.WSGIApplication([
     ('/blog/([A-Za-z0-9\-\_]+)/(\d+)', PostPage),
     ('/blog/([A-Za-z0-9\-\_]+)/(\d+)/edit', EditPost),
-    ('/blog/([A-Za-z0-9\-\_]+)/(\d+)/delete', DeletePost)
+    ('/blog/([A-Za-z0-9\-\_]+)/(\d+)/delete', DeletePost),
+    ('/blog/([A-Za-z0-9\-\_]+)/(\d+)/like', LikePost)
 ], debug=True)
