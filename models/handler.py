@@ -111,7 +111,8 @@ class UserPostHandler(Handler):
         """ Method adds new or edits existing post """
         subject = self.request.get("subject")
         content = self.request.get("content")
-        error, post_id = blog.Blog.put_post(self.user, subject, content)
+        error, post_id = blog.Blog.put_post(self.user, subject,
+                                            content, post)
         if error:
             self.render("newpost.html", subject=subject,
                         content=content, error=error)
