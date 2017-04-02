@@ -7,6 +7,7 @@ import os
 import hmac
 import jinja2
 import webapp2
+import blog
 from user import User
 
 # settings for a jinja environment
@@ -101,6 +102,28 @@ class UserPostHandler(Handler):
     to login page if user is not logged in
     """
     def initialize(self, *a, **kw):
+        """ Init method checks is a user is logged in """
         Handler.initialize(self, *a, **kw)
         if not self.user:
             self.redirect("/blog/login", abort=True)
+
+    def add_edit_post(self, post=None):
+        """ Method adds new or edits existing post """
+        subject = self.request.get("subject")
+        content = self.request.get("content")
+        error, post_id = blog.Blog.put_post(self.user, subject, content)
+        if error:
+            self.render("newpost.html", subject=subject,
+                        content=content, error=error)
+        else:
+            self.redirect("/blog/%s/%s" %
+                          (self.user.username, str(post_id)))
+
+    def get_post(self, post_id):
+        """ returns post object by post_id or redirects to newpost form"""
+        # if user is not the author, then the statement below will return None
+        post = blog.get_post(self.user.username, post_id)
+        if not post:
+            self.redirect("/blog/newpost", abort=True)
+        else:
+            return post

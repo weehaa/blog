@@ -4,6 +4,24 @@ import blog
 import likes
 
 
+class DeletePost(handler.UserPostHandler):
+    """ Delete post handler """
+    def get(self, author_name, post_id):
+        """ Get request handler for delete post action """
+        post = self.get_post(post_id)
+        self.render("permalink.html", post=post, action='Delete')
+
+    def post(self, author_name, post_id):
+        """Post request handler for a confirmation to delete post action"""
+        post = self.get_post(post_id)
+        action = self.request.get('action')
+        if action == 'Confirm':
+            post.delete()
+            self.render("permalink.html", post_deleted=True)
+            return
+        self.redirect("/blog/%s/%s" % (self.user.username, str(post_id)))
+
+
 class EditPost(handler.UserPostHandler):
     """ Class for a post page edit form """
     def get(self, author_name, post_id):
@@ -14,28 +32,8 @@ class EditPost(handler.UserPostHandler):
 
     def post(self, author_name, post_id):
         """Post request handler for a edit post form page"""
-        # if not the author tries to edit, then redirect to empty form
         post = self.get_post(post_id)
-        subject = self.request.get("subject")
-        content = self.request.get("content")
-        if subject and content:
-            post.subject = subject
-            post.content = content
-            post.put()
-            self.redirect("/blog/%s/%s" % (self.user.username, str(post_id)))
-        else:
-            error = "Subject and content should not be blank!"
-            self.render("newpost.html", post_id=post_id,
-                        subject=subject, content=content,
-                        error=error)
-
-    def get_post(self, post_id):
-        """ returns post object by post_id or redirects to newpost form"""
-        post = blog.get_post(self.user.username, post_id)
-        if not post:
-            self.redirect("/blog/newpost", abort=True)
-        else:
-            return post
+        self.add_edit_post(post)
 
 
 class PostPage(handler.Handler):
@@ -90,9 +88,14 @@ class PostPage(handler.Handler):
         """
         post_params = {}
 
+
         # action_delete is a confirmed deletion of the post
         action_delete = self.request.get('action_delete')
         action = self.request.get('action')
+
+        if action == 'Delete':
+            self.redirect("/blog/%s/%s/delete" %
+                          (self.user.username, str(post_id)))
 
         # if action is perfomed by not logged-in user, redirect him
         # to login page.
@@ -116,7 +119,7 @@ class PostPage(handler.Handler):
             # user actions handlers block
             # Edit post handler
             if action == 'Edit':
-                # redirect user to postform page with post id
+                # redirect user to post form page with post id
                 self.redirect("/blog/%s/%s/edit" %
                               (self.user.username, str(post_id)))
 
@@ -138,5 +141,6 @@ class PostPage(handler.Handler):
 
 app = handler.webapp2.WSGIApplication([
     ('/blog/([A-Za-z0-9\-\_]+)/(\d+)', PostPage),
-    ('/blog/([A-Za-z0-9\-\_]+)/(\d+)/edit', EditPost)
+    ('/blog/([A-Za-z0-9\-\_]+)/(\d+)/edit', EditPost),
+    ('/blog/([A-Za-z0-9\-\_]+)/(\d+)/delete', DeletePost)
 ], debug=True)

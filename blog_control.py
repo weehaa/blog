@@ -53,15 +53,7 @@ class NewPostFormPage(handler.UserPostHandler):
 
     def post(self):
         """post request handler for a post form page"""
-        subject = self.request.get("subject")
-        content = self.request.get("content")
-        error, post_id = blog.Blog.put_post(self.user, subject, content)
-        if error:
-            self.render("newpost.html", subject=subject,
-                        content=content, error=error)
-        else:
-            self.redirect("/blog/%s/%s" %
-                          (self.user.username, str(post_id)))
+        self.add_edit_post()
 
 
 app = handler.webapp2.WSGIApplication([

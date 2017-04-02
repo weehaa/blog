@@ -16,6 +16,9 @@
     </div>
     <input type="hidden" name="referer" value="{{referer}}">
     <input type="submit" value="Submit">
-    <a href="/blog/{{user}}/{{post_id}}" title="Cancel edit">Cancel</a>
+    <a href={% if post_id %}"/blog/{{user}}/{{post_id}}"
+            {% else %}"/blog"
+            {% endif %}
+       title="Cancel edit">Cancel</a>
   </form>
 {% endblock %}
