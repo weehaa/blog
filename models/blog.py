@@ -62,6 +62,28 @@ class Blog(db.Model):
         return query.run(limit=limit)
 
     @classmethod
+    def put_post(cls, user, subject, content, post=None):
+        """Method to update an existing post or insert a new one,
+        returns a tupple (error, post_id)
+        If a subject or a content is None - returns an error, None as post_id
+        Else - returns None as error, id of post as post_id
+        Arguments:
+        user -- a `User` instance
+        subject -- a subject of the post
+        content -- a content of the post
+        post -- a `Blog` instance, if None, creates a new instance.
+        """
+        if not (subject and content):
+            return  ("Subject and content should not be blank!", None)
+        if post:
+            post.subject = subject
+            post.content = content
+        else:
+            post = cls(parent=user, subject=subject, content=content)
+        post.put()
+        return (None, post.key().id())
+
+    @classmethod
     def commentcount_fix(cls, posts=None):
         """method for fix comments count"""
         if not posts:
@@ -73,6 +95,7 @@ class Blog(db.Model):
             post.comment_cnt = cnt
             post.put()
         return "fix complete"
+
 
 
 def get_post(author_name, post_id):

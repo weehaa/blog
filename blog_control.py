@@ -45,68 +45,23 @@ class BlogFront(handler.Handler):
                     posts=posts)
 
 
-class NewPostFormPage(handler.Handler):
+class NewPostFormPage(handler.UserPostHandler):
     """Class for page form submission to add a new or edit an existing post"""
     def get(self):
-        """get request handler for a post form page"""
-        referer = self.request.referer
-        post_id = self.request.get("post_id")
-        subject = content = ''
-        # show newpost page if user has logged in
-        if self.user:
-            if post_id:
-                post = blog.get_post(self.user.username, post_id)
-                if post:
-                    subject = post.subject
-                    content = post.content
-                else:
-                    self.redirect("/blog/newpost")
-            self.render_post(referer, subject, content)
-        else:
-            self.redirect("/blog/login")
-            return
+        """Get request handler for a post form page"""
+        self.render("newpost.html")
 
     def post(self):
         """post request handler for a post form page"""
-
-        if not self.user:
-            self.redirect("/blog/login")
-            return
-
-        referer = self.request.get("referer")
-        post_id = self.request.get("post_id")
         subject = self.request.get("subject")
         content = self.request.get("content")
-
-        if subject and content:
-            if post_id:
-                post = blog.get_post(self.user.username, post_id)
-            # if not the author tries to edit, then redirect to empty form
-                if post:
-                    post.content = content
-                    post.subject = subject
-                else:
-                    self.redirect("/blog/newpost")
-            # if no post_id -> new post
-            else:
-                post = blog.Blog(parent=self.user,
-                                 subject=subject,
-                                 content=content)
-            post.put()
-            if not post_id:
-                post_id = post.key().id()
+        error, post_id = blog.Blog.put_post(self.user, subject, content)
+        if error:
+            self.render("newpost.html", subject=subject,
+                        content=content, error=error)
+        else:
             self.redirect("/blog/%s/%s" %
                           (self.user.username, str(post_id)))
-        else:
-            error = "we need both a subject and some content!"
-            self.render_post(referer, subject, content, error)
-
-    def render_post(self, referer, subject, content, error=''):
-        self.render("newpost.html",
-                    referer=referer,
-                    subject=subject,
-                    content=content,
-                    error=error)
 
 
 app = handler.webapp2.WSGIApplication([
