@@ -15,7 +15,11 @@ class LikePost(handler.UserPostHandler):
         if self.user.username != author_name:
             # switch like/Dislike
             likes.Likes.set(post, self.user.username)
-        self.redirect("/blog/%s/%s" % (author_name, str(post_id)))
+        referer = self.request.referer
+        if referer:
+            self.redirect(referer)
+        else:
+            self.redirect("/blog/%s/%s" % (author_name, str(post_id)))
 
 
 class DeletePost(handler.UserPostHandler):
