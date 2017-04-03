@@ -4,6 +4,16 @@ import blog
 import likes
 
 
+class TestPost(handler.UserPostHandler):
+    """ Test class, delete it """
+    def initialize(self,  *a, **kw):
+        handler.UserPostHandler.initialize(self, *a, **kw)
+        self.args = self.request.route_kwargs
+        # self.args = self.request.path.split('/')
+    def get(self, author):
+        self.write("TEST %s" % str(self.args))
+
+
 class LikePost(handler.UserPostHandler):
     """ Class for a post page edit form """
     def get(self, author_name, post_id):
@@ -59,90 +69,50 @@ class PostPage(handler.Handler):
     Class for requested post page. If auhtor of the post is logged in,
     he can edit or delete post on the page.
     """
+    def params(self, author_name, post_id):
+        """ retrieve post instance and it's user's like status
+        into render parameters dict"""
+        self.render_params = {}
+        post = blog.get_post(author_name, post_id)
+        if not post:
+            self.error(404)
+            return
+        else:
+            self.render_params['post'] = post
+        if likes.Likes.by_username(post, self.user.username):
+            self.render_params['like_st'] = 'Dislike'
+        else:
+            self.render_params['like_st'] = 'Like'
 
     def get(self, author_name, post_id):
-        """get request method handler. Renders single post page base on
-        parameters from url + anchor to scroll to the focused action item of
-        the page
-        """
-        render_params = self.get_postparams(author_name, post_id)
-        self.render("permalink.html", **render_params)
-
-    def get_postparams(self, author_name, post_id):
-        """Metod returns render parameters for a get requests.
-        Retrieves post object and "like" status for logged in user.
-        """
-        render_params = {}
-        # retrieve post object
-        post = blog.get_post(author_name, post_id)
-        if not post:
-            self.error(404)
-            return
-        else:
-            render_params['post'] = post
-
-        # retrive user's like
-        if self.user and likes.Likes.by_username(post, self.user.username):
-            render_params['like_st'] = 'Dislike'
-        else:
-            render_params['like_st'] = 'Like'
-        return render_params
+        """ Get request method handler. Renders single post page base on
+        parameters  author_name and post_id """
+        self.params(author_name, post_id)
+        self.render("permalink.html", **self.render_params)
 
     def post(self, author_name, post_id):
-        """post request handler. Renders single post page base on
-        parameters from post request """
-        render_params = self.post_postparams(author_name, post_id)
-        self.render("permalink.html", **render_params)
+        """ Post request handler. Renders single post page base on
+        parameters from post request. If user pushes an action,
+        redirects it to the corresponding page"""
+        self.post_params(author_name, post_id)
 
-    def post_postparams(self, author_name, post_id):
-        """Method handles post request for a single post page.
-        Returns response, based on user actions from permalink.html
-        'actions' form, such as delete post (with confirmation), edit post,
-        add comment, like or dislike a post.
-        Adds comment to a database after comment content validation.
-        Parameters:
-        author_name -- post author name, taken from url
-        post_id -- post id, taken from url
-        """
-        post_params = {}
-
+    def post_params(self, author_name, post_id):
+        self.params(author_name, post_id)
         action = self.request.get('action')
-
-        if action == 'Delete':
-            self.redirect("/blog/%s/%s/delete" %
-                          (self.user.username, str(post_id)))
-
-        # get the post object
-        post = blog.get_post(author_name, post_id)
-        if not post:
-            self.error(404)
-            return
-
-        post_params['post'] = post
-
-        # user actions handlers block
-        # Edit post handler
-        if action == 'Edit':
-            # redirect user to post form page with post id
-            self.redirect("/blog/%s/%s/edit" %
-                          (self.user.username, str(post_id)))
-
-        # Like/dislike post handler
-        if action in ('Like', 'Dislike'):
-            self.redirect("/blog/%s/%s/like" %
-                          (author_name, str(post_id)))
-        # retrive user's like
-        if self.user and likes.Likes.by_username(post, self.user.username):
-            post_params['like_st'] = 'Dislike'
-        else:
-            post_params['like_st'] = 'Like'
-
-        post_params['action'] = action
-        return post_params
+        if action:
+            uri = self.uri_for('blogg', author=author_name)
+            self.redirect(uri)
+            # self.redirect("/blog/%s/%s/%s" %
+            #               (author_name,
+            #               str(post_id),
+            #               action.lower()))
 
 app = handler.webapp2.WSGIApplication([
+handler.webapp2.Route('/blog/<author>/test', handler=TestPost, name='blogg'),
     ('/blog/([A-Za-z0-9\-\_]+)/(\d+)', PostPage),
     ('/blog/([A-Za-z0-9\-\_]+)/(\d+)/edit', EditPost),
     ('/blog/([A-Za-z0-9\-\_]+)/(\d+)/delete', DeletePost),
-    ('/blog/([A-Za-z0-9\-\_]+)/(\d+)/like', LikePost)
+    ('/blog/([A-Za-z0-9\-\_]+)/(\d+)/like', LikePost),
+    ('/blog/([A-Za-z0-9\-\_]+)/(\d+)/dislike', LikePost),
+
 ], debug=True)

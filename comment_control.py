@@ -17,17 +17,17 @@ class PostCommentsPage(post_control.PostPage):
         the page
         """
         # call a inherited method from PostPage Class
-        render_params = self.get_postparams(author_name, post_id)
+        self.params(author_name, post_id)
         # comment id that is edited
-        render_params['edit_id'] = self.request.get('edit_id')
+        self.render_params['edit_id'] = self.request.get('edit_id')
         # user action
-        render_params['act'] = self.request.get('act')
+        self.render_params['act'] = self.request.get('act')
         # error while comment editing
-        render_params['error'] = self.request.get('error')
+        self.render_params['error'] = self.request.get('error')
         # retrieve all comments for the post
-        render_params['comments'] = \
-            comment.Comment.by_post(render_params['post'])
-        self.render("comments.html", **render_params)
+        self.render_params['comments'] = \
+            comment.Comment.by_post(self.render_params['post'])
+        self.render("comments.html", **self.render_params)
 
     def post(self, author_name, post_id):
         """Method handles post request for a single post page with comments.
@@ -39,7 +39,7 @@ class PostCommentsPage(post_control.PostPage):
         post_id -- post id, taken from url
         """
         url = '/blog/%s/%s/comments' % (author_name, post_id)
-        post_params = self.post_postparams(author_name, post_id)
+        self.post_params(author_name, post_id)
 
         action = self.request.get('action')
 
@@ -48,12 +48,6 @@ class PostCommentsPage(post_control.PostPage):
         if action and not self.user:
             self.redirect("/blog/login")
 
-        # get the post object
-        post = blog.get_post(author_name, post_id)
-        if not post:
-            self.error(404)
-            return
-        post_params['post'] = post
         comment_id = self.request.get('comment_id')
 
         # action "Edit comment"  handler
@@ -76,9 +70,11 @@ class PostCommentsPage(post_control.PostPage):
         if action == 'Submit comment':
             content = self.request.get('content')
             if content:
-                comment.Comment.db_put(post, self.user.username,
+                comment.Comment.db_put(self.render_params['post'],
+                                       self.user.username,
                                        content=content,
                                        comment_id=comment_id)
+                action = ''
             else:
                 if comment_id:
                     error = "Please, add some content"
@@ -90,11 +86,15 @@ class PostCommentsPage(post_control.PostPage):
                 self.redirect(url + url_arg)
 
         if action == 'Delete comment':
-            comment.Comment.db_delete(post, comment_id, self.user.username)
+            comment.Comment.db_delete(self.render_params['post'],
+                                      comment_id,
+                                      self.user.username)
+            action = ''
 
-        post_params['action'] = action
-        post_params['comments'] = comment.Comment.by_post(post)
-        self.render("comments.html", **post_params)
+        self.render_params['action'] = action
+        self.render_params['comments'] = comment.Comment. \
+                                         by_post(self.render_params['post'])
+        self.render("comments.html", **self.render_params)
 
 app = handler.webapp2.WSGIApplication([
     # post + comments page (/blog/username/post_id/comments )

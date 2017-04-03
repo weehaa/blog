@@ -40,7 +40,7 @@ class Handler(BaseHandler):
     logged in|out check and cookies processing
     """
     def initialize(self, *a, **kw):
-        """ this function is called before every request """
+        """ this method is called before every request """
         webapp2.RequestHandler.initialize(self, *a, **kw)
         uid = self.read_secure_cookie('user_id')
         # check if uid exists an store it in self.user
@@ -105,7 +105,7 @@ class UserPostHandler(Handler):
         """ Init method checks is a user is logged in """
         Handler.initialize(self, *a, **kw)
         if not self.user:
-            self.redirect("/blog/login", abort=True)
+            return self.redirect("/blog/login", abort=True)
 
     def add_edit_post(self, post=None):
         """ Method adds new or edits existing post """
@@ -125,6 +125,6 @@ class UserPostHandler(Handler):
         # if user is not the author, then the statement below will return None
         post = blog.get_post(self.user.username, post_id)
         if not post:
-            self.redirect("/blog/newpost", abort=True)
+            return self.redirect("/blog/newpost", abort=True)
         else:
             return post
