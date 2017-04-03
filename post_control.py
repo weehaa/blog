@@ -99,20 +99,18 @@ class PostPage(handler.Handler):
     def post_params(self, author_name, post_id):
         self.params(author_name, post_id)
         action = self.request.get('action')
+        uri = self.uri_for('post', author_name=author_name, post_id=post_id)
         if action:
-            uri = self.uri_for('blogg', author=author_name)
-            self.redirect(uri)
-            # self.redirect("/blog/%s/%s/%s" %
-            #               (author_name,
-            #               str(post_id),
-            #               action.lower()))
+
+            return self.redirect(uri + '/' + action.lower())
 
 app = handler.webapp2.WSGIApplication([
-handler.webapp2.Route('/blog/<author>/test', handler=TestPost, name='blogg'),
-    ('/blog/([A-Za-z0-9\-\_]+)/(\d+)', PostPage),
-    ('/blog/([A-Za-z0-9\-\_]+)/(\d+)/edit', EditPost),
-    ('/blog/([A-Za-z0-9\-\_]+)/(\d+)/delete', DeletePost),
-    ('/blog/([A-Za-z0-9\-\_]+)/(\d+)/like', LikePost),
-    ('/blog/([A-Za-z0-9\-\_]+)/(\d+)/dislike', LikePost),
-
-], debug=True)
+    handler.webapp2.Route('/blog/<author_name>/<post_id>',
+                          handler=PostPage, name='post'),
+    handler.webapp2.Route('/blog/<author_name>/<post_id>/edit',
+                          handler=EditPost, name='post-edit'),
+    handler.webapp2.Route('/blog/<author_name>/<post_id>/delete',
+                          handler=DeletePost, name='post-delete'),
+    handler.webapp2.Route('/blog/<author_name>/<post_id>/<:(dis)?like>',
+                          handler=LikePost, name='post-like'),
+    ], debug=True)
