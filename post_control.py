@@ -69,11 +69,13 @@ class PostPage(handler.Handler):
     Class for requested post page. If auhtor of the post is logged in,
     he can edit or delete post on the page.
     """
-    def params(self, author_name, post_id):
+    def initialize(self, *args, **kwargs):
         """ retrieve post instance and it's user's like status
         into render parameters dict"""
+        handler.Handler.initialize(self, *args, **kwargs)
+        kwargs = self.request.route_kwargs
         self.render_params = {}
-        post = blog.get_post(author_name, post_id)
+        post = blog.get_post(kwargs['author_name'], kwargs['post_id'])
         if not post:
             self.error(404)
             return
@@ -87,7 +89,6 @@ class PostPage(handler.Handler):
     def get(self, author_name, post_id):
         """ Get request method handler. Renders single post page base on
         parameters  author_name and post_id """
-        self.params(author_name, post_id)
         self.render("permalink.html", **self.render_params)
 
     def post(self, author_name, post_id):
@@ -97,12 +98,12 @@ class PostPage(handler.Handler):
         self.post_params(author_name, post_id)
 
     def post_params(self, author_name, post_id):
-        self.params(author_name, post_id)
         action = self.request.get('action')
         uri = self.uri_for('post', author_name=author_name, post_id=post_id)
         if action:
-
-            return self.redirect(uri + '/' + action.lower())
+            return self.redirect('{}/{}'.format(uri, action.lower()))
+        else:
+            return self.redirect(uri)
 
 app = handler.webapp2.WSGIApplication([
     handler.webapp2.Route('/blog/<author_name>/<post_id>',

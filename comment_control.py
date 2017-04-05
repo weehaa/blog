@@ -5,6 +5,58 @@ import blog
 import comment
 
 
+class DeleteComment(post_control.PostPage):
+    """ Delete comment handler """
+    def initialize(self, *args, **kwargs):
+
+        if not self.user:
+            return self.redirect('/blog/login')
+        # TODO add check user == comment_author
+
+        post_control.PostPage.initialize(self, *args, **kwargs)
+        uri = self.request.path_qs
+        uri = uri[:uri.find('/comments') + len('/comments')]
+        comment_id = self.request.get('cid')
+        comment.Comment.db_delete(self.render_params['post'],
+                                  comment_id,
+                                  self.user.username)
+        return self.redirect(uri)
+
+
+class EditComment(post_control.PostPage):
+    """ Edit comment handler """
+    def get(self, author_name, post_id):
+        """ renders post page with comments with content textarea to edit the
+        selected comment """
+        if not self.user:
+            return self.redirect('/blog/login')
+        # TODO add check user == comment_author
+
+        self.render_params['edit_id'] = self.request.get('cid')
+        self.render_params['comments'] = comment.Comment. \
+                                         by_post(self.render_params['post'])
+        self.render("comments.html", **self.render_params)
+
+
+class AddComment(post_control.PostPage):
+    """ Add comment handler """
+    def get(self, author_name, post_id):
+        """ renders post page with comments with empty textarea to add a
+        comment """
+        if not self.user:
+            return self.redirect('/blog/login')
+
+        uri = self.uri_for('post-comments',
+                           author_name=author_name, post_id=post_id)
+
+        if self.user.username == author_name:
+            return self.redirect(uri)
+            
+        self.render_params['act'] = 'Add comment'
+        self.render_params['comments'] = comment.Comment. \
+                                         by_post(self.render_params['post'])
+        self.render("comments.html", **self.render_params)
+
 class PostCommentsPage(post_control.PostPage):
     """
     Class for requested post page with comments.
@@ -16,10 +68,6 @@ class PostCommentsPage(post_control.PostPage):
         parameters from url + anchor to scroll to the focused action item of
         the page
         """
-        # call a inherited method from PostPage Class
-        self.params(author_name, post_id)
-        # comment id that is edited
-        self.render_params['edit_id'] = self.request.get('edit_id')
         # user action
         self.render_params['act'] = self.request.get('act')
         # error while comment editing
@@ -38,6 +86,9 @@ class PostCommentsPage(post_control.PostPage):
         author_name -- post author name, taken from url
         post_id -- post id, taken from url
         """
+        uri = self.uri_for('post-comments',
+                           author_name=author_name, post_id=post_id)
+
         url = '/blog/%s/%s/comments' % (author_name, post_id)
         self.post_params(author_name, post_id)
 
@@ -53,18 +104,15 @@ class PostCommentsPage(post_control.PostPage):
         # action "Edit comment"  handler
         if action == 'Edit comment':
             # redirect user to this page with an anchor to edit comment
-            url_arg = '?edit_id=%s#id_%s' % (comment_id, comment_id)
-            self.redirect(url + url_arg)
+            return self.redirect('{}/edit?cid={}#id_{}'.format(uri,
+                                                            comment_id,
+                                                            comment_id))
 
         # action "Add comment" handler
         if action == 'Add comment':
-            # redirect user to this page with anchor to empty comment form
-            if self.user.username == author_name:
-                error = "You can't comment your own post"
-                url_arg = "?error=%s#id_0" % error
-            else:
-                url_arg = '?act=Add comment#id_0'
-            self.redirect(url + url_arg)
+            return self.redirect('{}/add?cid=0#id_0'.format(uri,
+                                                            comment_id,
+                                                            comment_id))
 
         # handler for "Submit" new or edited comment
         if action == 'Submit comment':
@@ -86,10 +134,7 @@ class PostCommentsPage(post_control.PostPage):
                 self.redirect(url + url_arg)
 
         if action == 'Delete comment':
-            comment.Comment.db_delete(self.render_params['post'],
-                                      comment_id,
-                                      self.user.username)
-            action = ''
+            return self.redirect('{}/delete?cid={}'.format(uri,comment_id))
 
         self.render_params['action'] = action
         self.render_params['comments'] = comment.Comment. \
@@ -97,6 +142,14 @@ class PostCommentsPage(post_control.PostPage):
         self.render("comments.html", **self.render_params)
 
 app = handler.webapp2.WSGIApplication([
-    # post + comments page (/blog/username/post_id/comments )
-    ('/blog/([A-Za-z0-9\-\_]+)/(\d+)/comments', PostCommentsPage)
+    handler.webapp2.Route('/blog/<author_name>/<post_id>/comments',
+                          handler=PostCommentsPage, name='post-comments'),
+    handler.webapp2.Route('/blog/<author_name>/<post_id>/comments/delete',
+                          handler=DeleteComment, name='comment-delete'),
+    handler.webapp2.Route('/blog/<author_name>/<post_id>/comments/edit',
+                          handler=EditComment, name='comment-edit'),
+    handler.webapp2.Route('/blog/<author_name>/<post_id>/comments/add',
+                          handler=AddComment, name='comment-add'),
+    handler.webapp2.Route('/blog/<author_name>/<post_id>',
+                          handler='post_control.PostPage', name='post'),
 ], debug=True)

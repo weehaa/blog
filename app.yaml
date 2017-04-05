@@ -13,6 +13,8 @@ handlers:
   script: post_control.app
 - url: /blog/([A-Za-z0-9\-\_]+)/(\d+)/comments
   script: comment_control.app
+- url: /blog/([A-Za-z0-9\-\_]+)/(\d+)/comments/(\w+)
+  script: comment_control.app
 - url: /blog/([A-Za-z0-9\-\_]+)/(\d+)/(\w+)
   script: post_control.app
 - url: /.*
