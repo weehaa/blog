@@ -81,10 +81,11 @@ class PostPage(handler.Handler):
             return
         else:
             self.render_params['post'] = post
-        if likes.Likes.by_username(post, self.user.username):
-            self.render_params['like_st'] = 'Dislike'
-        else:
-            self.render_params['like_st'] = 'Like'
+        if self.user:
+            if likes.Likes.by_username(post, self.user.username):
+                self.render_params['like_st'] = 'Dislike'
+            else:
+                self.render_params['like_st'] = 'Like'
 
     def get(self, author_name, post_id):
         """ Get request method handler. Renders single post page base on
@@ -102,7 +103,9 @@ class PostPage(handler.Handler):
         uri = self.uri_for('post', author_name=author_name,
                            post_id=post_id)
         if action:
-            return self.redirect('{}/{}'.format(uri, action.lower()))
+            return self.redirect('{}/{}#{}'.format(uri,
+                                                   action.lower(),
+                                                   action.lower()))
         else:
             return self.redirect(uri)
 

@@ -59,7 +59,7 @@ class EditComment(UserCommentHandler):
         action = self.request.get('action_comment')
         comment_id = self.request.get('comment_id')
         uri = self.uri_for('post-comments', author_name=author_name,
-                           post_id=post_id, _fragment=str(comment_id))
+                           post_id=post_id, _fragment='cid_' + str(comment_id))
         if action == 'Submit comment' \
            and check_author(self.render_params['post'].key(),
                             comment_id,
