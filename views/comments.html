@@ -4,14 +4,18 @@
 <!-- comments block -->
 <h3 class="comments-title">Comments</h3>
 {% if user and (user != post.author) %}
-    <input form="actions" type="submit" name="action" value="Add comment">
+    <input form="actions" type="submit" name="action_comment"
+           value="Add comment">
+           <span class="error">
+             {{delete_msg}}
+         </span>
 {% endif %}
 <!-- New comment form -->
 {% if act == 'Add comment' %}
     <!-- Do not show form if user not logged in or user is an author -->
     {% if user and not user == post.author %}
         <label>
-          <textarea id="cid_0" form="actions"
+          <textarea  id="cid_0" form="actions"
                     class="textarea" name="content">{{content}}</textarea>
             <div class="error">
               {{error}}
@@ -19,7 +23,7 @@
         </label>
 
         <input form="actions" type="submit"
-               name="action" value="Submit comment">
+               name="action_comment" value="Submit comment">
         <input form="actions" type="submit"
                name="action_cancel" value="Cancel">
    {% else %}
@@ -40,9 +44,9 @@
                        name="comment_id" value="{{comment.key().id()}}">
               {% if not edit_id %}
                     <input type="submit"
-                           name="action" value="Edit comment">
+                           name="action_comment" value="Edit comment">
                     <input type="submit"
-                           name="action" value="Delete comment">
+                           name="action_comment" value="Delete comment">
               {% endif %}
            </form>
         {% endif %}

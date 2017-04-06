@@ -99,7 +99,8 @@ class PostPage(handler.Handler):
 
     def post_params(self, author_name, post_id):
         action = self.request.get('action')
-        uri = self.uri_for('post', author_name=author_name, post_id=post_id)
+        uri = self.uri_for('post', author_name=author_name,
+                           post_id=post_id)
         if action:
             return self.redirect('{}/{}'.format(uri, action.lower()))
         else:
